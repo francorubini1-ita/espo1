@@ -1,55 +1,49 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8">
-  <title>Prenotazione Espositore</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prenotazioni Espositori</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-<section id="prenotazione-espositore">
+  <!-- INTESTAZIONE FISSA -->
+  <div id="appTitle">
+    <div class="titolo-grande">Prenotazioni</div>
+    <div class="titolo-sottile">Espositori</div>
+  </div>
 
-  <div id="app">
+  <div id="prenotazione-espositore">
 
-    <div class="app-header">Prenotazione Espositore</div>
-
-    <div class="card">
+    <div class="card" id="formContainer">
 
       <div class="field">
-        <label class="field-label" for="date">Data</label>
-        <input class="field-input" type="date" id="date">
+        <label for="date" id="labelDate" class="field-label">Data</label>
+        <input type="date" id="date" class="field-input" />
       </div>
 
-      <div class="field time-row">
+      <div class="time-row">
         <div class="time-col">
-          <label class="field-label" for="start">Inizio</label>
-          <div class="time-inner">
-            <span class="emoji">⏱</span>
-            <input class="field-input" type="time" id="start">
-          </div>
+          <label for="start" id="labelStart" class="field-label">Orario di inizio</label>
+          <input type="time" id="start" class="field-input" />
         </div>
 
         <div class="time-col">
-          <label class="field-label" for="end">Fine</label>
-          <div class="time-inner">
-            <span class="emoji">⏱</span>
-            <input class="field-input" type="time" id="end">
-          </div>
+          <label for="end" id="labelEnd" class="field-label">Orario di fine</label>
+          <input type="time" id="end" class="field-input" />
         </div>
       </div>
 
       <div class="field">
-        <label class="field-label" for="name">Nome</label>
-        <input class="field-input" type="text" id="name">
+        <label for="name" class="field-label">Nome</label>
+        <input type="text" id="name" class="field-input" />
       </div>
 
       <div class="field">
-        <label class="field-label" for="postazione">Postazione</label>
-        <select class="field-input" id="postazione">
+        <label for="postazione" class="field-label">Postazione</label>
+        <select id="postazione" class="field-input">
           <option value="1">Postazione 1</option>
           <option value="2">Postazione 2</option>
           <option value="3">Postazione 3</option>
@@ -61,76 +55,47 @@
         </select>
       </div>
 
-      <button id="openPostazioni" class="postazioni-inline-btn">
-        📍 Dove sono le postazioni?
-      </button>
-      
+      <button id="check">Controlla disponibilità</button>
+      <button id="send" disabled>Invia prenotazione</button>
+
     </div>
 
-    <!-- STATUS -->
+    <div id="detailsPanel"></div>
+    <div id="suggestions"></div>
+
     <div id="status">
-      <span id="icon" class="icon"></span>
+      <span id="icon"></span>
       <span id="msg"></span>
     </div>
-
-    <!-- PANNELLI -->
-    <div id="formContainer">
-
-      <div id="detailsPanel">
-        <strong>Conflitti trovati</strong>
-        <ul id="conflictList"></ul>
-      </div>
-
-      <div id="suggestions">
-        <div id="suggestList"></div>
-      </div>
-
-      <button id="check">Controlla la disponibilità</button>
-      <button id="send" disabled>Invia una prenotazione</button>
-
-    </div>
-
-    <!-- RIEPILOGO -->
-    <h3 class="title">Riepilogo prenotazioni</h3>
-
-    <div class="update-wrap">
-      <button onclick="caricaRiepilogo()">Aggiorna</button>
-    </div>
-
-    <div id="riepilogo"></div>
 
     <!-- MODALE -->
     <div id="confirmModal">
       <div id="confirmBox">
-        <p id="confirmText"></p>
-        <button id="confirmYes" class="yes">Conferma</button>
+        <div id="confirmText"></div>
+        <button id="confirmYes">Conferma</button>
         <button id="confirmNo" class="secondary">Annulla</button>
       </div>
     </div>
 
     <!-- OVERLAY -->
-    <div id="loadingOverlay">Prenotazione inviata…</div>
+    <div id="loadingOverlay">Invio…</div>
 
-    <!-- MENU LATERALE POSTAZIONI -->
+    <!-- MENU POSTAZIONI -->
     <div id="postazioniMenu">
       <div id="postazioniHeader">
         <strong>Postazioni</strong>
-        <button id="closePostazioni" class="secondary" style="width:auto;padding:2vw 3vw;font-size:4vw;">Chiudi</button>
+        <button id="closePostazioni" class="secondary">Chiudi</button>
       </div>
       <div id="postazioniList"></div>
     </div>
 
+    <button id="openPostazioni" class="secondary" style="margin:4vw;">Apri elenco postazioni</button>
+
+    <h2 class="title">Riepilogo prenotazioni</h2>
+    <div id="riepilogo"></div>
+
   </div>
 
-</section>
-
-<!-- JS -->
-<script src="app.js"></script>
-
+  <script src="app.js"></script>
 </body>
 </html>
-
-
-
-
-
