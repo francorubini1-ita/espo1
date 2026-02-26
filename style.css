@@ -1,6 +1,7 @@
+/* ===========================
+   VARIABILI GLOBALI
+=========================== */
 :root {
-  color-scheme: light dark;
-
   --label-size: 5vw;
   --input-size: 4vw;
   --input-padding: 3vw;
@@ -18,51 +19,61 @@
   --ios-border: #d1d1d6;
 }
 
-/* LABEL ROSSA */
+/* Tema scuro */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1e;
+    --card-bg: #2c2c2e;
+    --text: #f2f2f7;
+    --shadow: 0 6px 18px rgba(0,0,0,0.6);
+    --ios-border: #3a3a3c;
+  }
+}
+
+/* ===========================
+   LABEL ERROR (AGGIUNTA)
+=========================== */
 .label-error {
   color: red !important;
   font-weight: 700;
 }
 
-/* INTESTAZIONE FISSA */
-#appTitle {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: #ffffff;
-  text-align: center;
-  padding: 4vw 0 3vw 0;
-  z-index: 999999;
-  border-bottom: 1px solid rgba(0,0,0,0.15);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-}
-
-.titolo-grande {
-  font-size: 7.5vw;
-  font-weight: 800;
-  color: #0066ff;
-}
-
-.titolo-sottile {
-  font-size: 4vw;
-  font-weight: 500;
-  color: #444;
-  margin-top: 1vw;
-}
-
-/* BODY */
+/* ===========================
+   STRUTTURA BASE
+=========================== */
 body {
   margin: 0;
   overflow-y: auto;
-  padding-top: 24vw;
   -webkit-overflow-scrolling: touch;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
   background: var(--bg);
   color: var(--text);
 }
 
-/* CARD FORM */
+#prenotazione-espositore {
+  background: var(--bg);
+  color: var(--text);
+  padding-bottom: 1vw;
+}
+
+.app-header {
+  background: var(--primary);
+  color: white;
+  padding: 4vw;
+  font-size: 6vw;
+  font-weight: 700;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  /* OMBRA CORRETTA (MODIFICATA) */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+/* ===========================
+   CARD FORM
+=========================== */
 .card {
   background: var(--card-bg);
   margin: 4vw;
@@ -94,8 +105,13 @@ body {
 
 .time-row { display: flex; gap: 4vw; }
 .time-col { flex: 1; }
+.time-inner { display: flex; align-items: center; gap: 2vw; }
 
-/* BOTTONI */
+.emoji { font-size: 6vw; }
+
+/* ===========================
+   BOTTONI
+=========================== */
 button {
   position: relative;
   overflow: hidden;
@@ -113,9 +129,38 @@ button {
 }
 
 button.secondary { background: #ccc; color: #111; }
+#send { background: var(--success); }
 #send:disabled { background: #9acfb8; cursor: not-allowed; }
 
-/* STATUS */
+button:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+
+/* Ripple */
+button::after {
+  content: "";
+  position: absolute;
+  left: var(--ripple-x, 50%);
+  top: var(--ripple-y, 50%);
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.45);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.6s;
+}
+
+button.ripple-active::after {
+  transform: translate(-50%, -50%) scale(60);
+  opacity: 1;
+}
+
+/* ===========================
+   STATUS
+=========================== */
 #status {
   position: fixed;
   top: 50%;
@@ -125,6 +170,7 @@ button.secondary { background: #ccc; color: #111; }
   background: rgba(0,0,0,0.65);
   color: white;
   border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
   display: none;
   pointer-events: none;
   z-index: 9999;
@@ -139,7 +185,38 @@ button.secondary { background: #ccc; color: #111; }
   opacity: 1;
 }
 
-/* MODALE */
+#status .icon {
+  font-size: 10vw;
+  display: block;
+  margin-bottom: 2vw;
+}
+
+/* ===========================
+   PANNELLI
+=========================== */
+#formContainer {
+  background: #000;
+  color: #fff;
+  padding: 4vw;
+  margin: 4vw;
+  border: 1px solid var(--ios-border);
+  border-radius: 12px;
+}
+
+#detailsPanel,
+#suggestions {
+  margin-top: 4vw;
+  padding: 4vw;
+  background: #1c1c1e;
+  border-radius: var(--radius);
+  font-size: 4vw;
+  display: none;
+  border: 1px solid var(--ios-border);
+}
+
+/* ===========================
+   MODALE
+=========================== */
 #confirmModal {
   position: fixed;
   inset: 0;
@@ -161,7 +238,14 @@ button.secondary { background: #ccc; color: #111; }
   border: 1px solid var(--ios-border);
 }
 
-/* OVERLAY */
+#confirmText {
+  margin-bottom: 4vw;
+  font-size: 4.5vw;
+}
+
+/* ===========================
+   OVERLAY
+=========================== */
 #loadingOverlay {
   position: fixed;
   inset: 0;
@@ -184,7 +268,26 @@ button.secondary { background: #ccc; color: #111; }
   opacity: 1;
 }
 
-/* MENU POSTAZIONI */
+/* ===========================
+   RIEPILOGO
+=========================== */
+.title { margin-left: 4vw; }
+#riepilogo { margin: 0 4vw 6vw 4vw; }
+.update-wrap { padding: 0 4vw; margin-bottom: 4vw; }
+
+.booking {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 3vw;
+  margin-bottom: 2vw;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border: 1px solid var(--ios-border);
+  font-size: 4vw;
+}
+
+/* ===========================
+   MENU LATERALE POSTAZIONI
+=========================== */
 #postazioniMenu {
   position: fixed;
   top: 0;
@@ -194,7 +297,14 @@ button.secondary { background: #ccc; color: #111; }
   background: var(--card-bg);
   color: var(--text);
   box-shadow: -4px 0 12px rgba(0,0,0,0.25);
-  padding: 24vw 4vw 4vw 4vw; /* evita sovrapposizione con intestazione */
+
+  /* EVITA SOVRAPPOSIZIONE CON INTESTAZIONE (AGGIUNTO) */
+  padding-top: 20vw;
+
+  padding-left: 4vw;
+  padding-right: 4vw;
+  padding-bottom: 4vw;
+
   z-index: 9999;
   transition: right 0.35s ease;
   overflow-y: auto;
@@ -202,4 +312,24 @@ button.secondary { background: #ccc; color: #111; }
 
 #postazioniMenu.show {
   right: 0;
+}
+
+#postazioniHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4vw;
+  font-size: 5vw;
+}
+
+#postazioniList div {
+  padding: 3vw 0;
+  border-bottom: 1px solid var(--ios-border);
+  font-size: 4.2vw;
+}
+
+#postazioniList a {
+  color: var(--primary);
+  text-decoration: underline;
+  font-size: 4vw;
 }
