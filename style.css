@@ -1,0 +1,319 @@
+/* ===========================
+   VARIABILI GLOBALI
+=========================== */
+:root {
+  --label-size: 5vw;
+  --input-size: 4vw;
+  --input-padding: 3vw;
+  --button-size: 4.2vw;
+  --status-size: 4vw;
+
+  --primary: #0066ff;
+  --success: #00b36b;
+  --bg: #f5f7fa;
+  --card-bg: #ffffff;
+  --text: #222;
+  --radius: 14px;
+  --shadow: 0 6px 18px rgba(0,0,0,0.12);
+
+  --ios-border: #d1d1d6;
+}
+
+/* Tema scuro */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1e;
+    --card-bg: #2c2c2e;
+    --text: #f2f2f7;
+    --shadow: 0 6px 18px rgba(0,0,0,0.6);
+    --ios-border: #3a3a3c;
+  }
+}
+
+/* ===========================
+   STRUTTURA BASE
+=========================== */
+body {
+  margin: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+  background: var(--bg);
+  color: var(--text);
+}
+
+#prenotazione-espositore {
+  background: var(--bg);
+  color: var(--text);
+  padding-bottom: 10vw;
+}
+
+.app-header {
+  background: var(--primary);
+  color: white;
+  padding: 4vw;
+  font-size: 6vw;
+  font-weight: 700;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+/* ===========================
+   CARD FORM
+=========================== */
+.card {
+  background: var(--card-bg);
+  margin: 4vw;
+  padding: 4vw;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--ios-border);
+}
+
+.field { margin-bottom: 6vw; }
+
+.field-label {
+  display: block;
+  font-size: var(--label-size);
+  font-weight: 700;
+  margin-bottom: 2vw;
+}
+
+.field-input {
+  width: 100%;
+  padding: var(--input-padding);
+  font-size: var(--input-size);
+  border-radius: var(--radius);
+  border: 1px solid var(--ios-border);
+  background: var(--card-bg);
+  color: var(--text);
+  box-sizing: border-box;
+}
+
+.time-row { display: flex; gap: 4vw; }
+.time-col { flex: 1; }
+.time-inner { display: flex; align-items: center; gap: 2vw; }
+
+.emoji { font-size: 6vw; }
+
+/* ===========================
+   BOTTONI
+=========================== */
+button {
+  position: relative;
+  overflow: hidden;
+  background: var(--primary);
+  color: white;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+  transition: 0.15s ease;
+  border: none;
+  padding: 3.5vw;
+  font-size: var(--button-size);
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+button.secondary { background: #ccc; color: #111; }
+#send { background: var(--success); }
+#send:disabled { background: #9acfb8; cursor: not-allowed; }
+
+button:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+
+/* Ripple */
+button::after {
+  content: "";
+  position: absolute;
+  left: var(--ripple-x, 50%);
+  top: var(--ripple-y, 50%);
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.45);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.6s;
+}
+
+button.ripple-active::after {
+  transform: translate(-50%, -50%) scale(60);
+  opacity: 1;
+}
+
+/* ===========================
+   STATUS
+=========================== */
+#status {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 4vw 6vw;
+  background: rgba(0,0,0,0.65);
+  color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  display: none;
+  pointer-events: none;
+  z-index: 9999;
+  text-align: center;
+  font-size: var(--status-size);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+#status.show {
+  display: block;
+  opacity: 1;
+}
+
+#status .icon {
+  font-size: 10vw;
+  display: block;
+  margin-bottom: 2vw;
+}
+
+/* ===========================
+   PANNELLI
+=========================== */
+#formContainer {
+  background: #000;
+  color: #fff;
+  padding: 4vw;
+  margin: 4vw;
+  border: 1px solid var(--ios-border);
+  border-radius: 12px;
+}
+
+#detailsPanel,
+#suggestions {
+  margin-top: 4vw;
+  padding: 4vw;
+  background: #1c1c1e;
+  border-radius: var(--radius);
+  font-size: 4vw;
+  display: none;
+  border: 1px solid var(--ios-border);
+}
+
+/* ===========================
+   MODALE
+=========================== */
+#confirmModal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+#confirmBox {
+  background: var(--card-bg);
+  padding: 5vw;
+  width: 90%;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+  font-size: 4vw;
+  border: 1px solid var(--ios-border);
+}
+
+#confirmText {
+  margin-bottom: 4vw;
+  font-size: 4.5vw;
+}
+
+/* ===========================
+   OVERLAY
+=========================== */
+#loadingOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  color: white;
+  font-size: 6vw;
+  font-weight: bold;
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+#loadingOverlay.show {
+  display: flex;
+  opacity: 1;
+}
+
+/* ===========================
+   RIEPILOGO
+=========================== */
+.title { margin-left: 4vw; }
+#riepilogo { margin: 0 4vw 6vw 4vw; }
+.update-wrap { padding: 0 4vw; margin-bottom: 4vw; }
+
+.booking {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 3vw;
+  margin-bottom: 2vw;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border: 1px solid var(--ios-border);
+  font-size: 4vw;
+}
+
+/* ===========================
+   MENU LATERALE POSTAZIONI
+=========================== */
+#postazioniMenu {
+  position: fixed;
+  top: 0;
+  right: -100vw; /* completamente fuori dallo schermo */
+  width: 80vw;
+  height: 100vh;
+  background: var(--card-bg);
+  color: var(--text);
+  box-shadow: -4px 0 12px rgba(0,0,0,0.25);
+  padding: 4vw;
+  z-index: 9999;
+  transition: right 0.35s ease;
+  overflow-y: auto;
+}
+
+#postazioniMenu.show {
+  right: 0;
+}
+
+#postazioniHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4vw;
+  font-size: 5vw;
+}
+
+#postazioniList div {
+  padding: 3vw 0;
+  border-bottom: 1px solid var(--ios-border);
+  font-size: 4.2vw;
+}
+
+#postazioniList a {
+  color: var(--primary);
+  text-decoration: underline;
+  font-size: 4vw;
+}
+
