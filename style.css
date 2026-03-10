@@ -1,29 +1,19 @@
 /* ============================================================
-   1. VARIABILI GLOBALI (Design System)
-   Usiamo le variabili per gestire i colori in un unico punto.
+   1. VARIABILI E TEMA
    ============================================================ */
 :root {
-  /* Dimensioni e Spaziature */
-  --label-size: 4.5vw;
-  --input-size: 4vw;
-  --input-padding: 3.5vw;
-  --radius: 12px;
-
-  /* Palette colori - Tema Chiaro */
-  --primary: #007aff;       /* Blu iOS */
-  --success: #34c759;       /* Verde iOS */
-  --error: #ff3b30;         /* Rosso iOS */
-  --bg: #f2f2f7;            /* Grigio chiaro sfondo */
-  --card-bg: #ffffff;       /* Bianco card */
-  --text: #1c1c1e;          /* Testo scuro */
-  --text-secondary: #8e8e93;/* Testo grigio */
-  --ios-border: #d1d1d6;    /* Bordi chiari */
+  --primary: #007aff;
+  --success: #34c759;
+  --error: #ff3b30;
+  --bg: #f2f2f7;
+  --card-bg: #ffffff;
+  --text: #1c1c1e;
+  --text-secondary: #8e8e93;
+  --ios-border: #d1d1d6;
   --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  --radius: 12px;
 }
 
-/* ============================================================
-   2. TEMA SCURO (Dark Mode automatico)
-   ============================================================ */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #000000;
@@ -36,23 +26,21 @@
 }
 
 /* ============================================================
-   3. STRUTTURA BASE
+   2. STRUTTURA E HEADER
    ============================================================ */
 body {
   margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: var(--bg);
   color: var(--text);
-  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
 .app-header {
   background: var(--primary);
   color: white;
-  padding: 5vw;
-  font-size: 6vw;
+  padding: 15px;
+  font-size: 20px;
   font-weight: 800;
   text-align: center;
   position: sticky;
@@ -62,33 +50,31 @@ body {
 }
 
 /* ============================================================
-   4. FORM E INPUT
+   3. FORM E INPUT
    ============================================================ */
 .card {
   background: var(--card-bg);
-  margin: 4vw;
-  padding: 5vw;
+  margin: 15px;
+  padding: 20px;
   border-radius: var(--radius);
   border: 1px solid var(--ios-border);
   box-shadow: var(--shadow);
 }
 
-.field {
-  margin-bottom: 4vw;
-}
+.field { margin-bottom: 15px; }
 
 .field-label {
   display: block;
-  font-size: var(--label-size);
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 1.5vw;
-  transition: color 0.3s ease; /* Transizione fluida per l'errore */
+  margin-bottom: 6px;
+  transition: color 0.3s;
 }
 
 .field-input {
   width: 100%;
-  padding: var(--input-padding);
-  font-size: var(--input-size);
+  padding: 12px;
+  font-size: 16px;
   border-radius: 10px;
   border: 1px solid var(--ios-border);
   background: var(--bg);
@@ -96,16 +82,10 @@ body {
   box-sizing: border-box;
 }
 
-/* Layout per orari affiancati */
-.time-row {
-  display: flex;
-  gap: 3vw;
-}
+.time-row { display: flex; gap: 10px; }
 .time-col { flex: 1; }
 
-/* ============================================================
-   5. STATI DI ERRORE (Novità: Data retroattiva)
-   ============================================================ */
+/* STATO ERRORE */
 .label-error {
   color: var(--error) !important;
   animation: shake 0.4s ease-in-out;
@@ -113,132 +93,102 @@ body {
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-6px); }
-  50% { transform: translateX(6px); }
-  75% { transform: translateX(-6px); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
 }
 
 /* ============================================================
-   6. BOTTONI
+   4. BOTTONI
    ============================================================ */
 button {
   width: 100%;
-  padding: 4vw;
-  font-size: 4.2vw;
+  padding: 15px;
+  font-size: 16px;
   font-weight: 700;
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
-  transition: opacity 0.2s ease;
-  margin-top: 2vw;
+  transition: opacity 0.2s;
 }
 
-#check { background-color: var(--primary); color: white; }
-#send { background-color: var(--success); color: white; margin-top: 4vw; }
-#send:disabled { opacity: 0.3; cursor: not-allowed; }
-
-button.secondary { background-color: #6e6e73; color: white; }
+#check { background: var(--primary); color: white; }
+#send { background: var(--success); color: white; margin-top: 15px; }
+#send:disabled { opacity: 0.3; }
 
 .postazioni-inline-btn {
   background: transparent;
   color: var(--primary);
   text-decoration: underline;
-  padding: 2vw;
+  margin-top: 10px;
 }
 
 /* ============================================================
-   7. RIEPILOGO (Stile a Card come da immagine)
+   5. RIEPILOGO (CARD)
    ============================================================ */
-#riepilogo {
-  padding: 0 4vw 10vw 4vw;
-}
+#riepilogo { padding: 0 15px 40px 15px; }
 
 .riepilogo-date {
-  font-size: 5.5vw;
+  font-size: 18px;
   font-weight: 700;
-  margin: 8vw 0 3vw 0;
-  color: var(--text);
+  margin: 25px 0 10px 0;
 }
 
 .booking-card {
   background: var(--card-bg);
-  border-radius: 12px;
-  padding: 4vw;
-  margin-bottom: 3vw;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 10px;
   border: 1px solid var(--ios-border);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-.booking-info {
-  font-size: 4.2vw;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.booking-time {
-  font-size: 3.8vw;
-  color: var(--text-secondary);
-}
+.booking-info { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.booking-time { font-size: 14px; color: var(--text-secondary); }
+.status-msg { text-align: center; padding: 20px; opacity: 0.6; }
 
 /* ============================================================
-   8. COMPONENTI UI (Overlay, Modali, Menu)
+   6. OVERLAY E MODALI
    ============================================================ */
 #loadingOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.75);
   backdrop-filter: blur(5px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  z-index: 9999;
+  display: none; align-items: center; justify-content: center;
+  color: white; font-weight: bold; z-index: 9999;
 }
 
+#loadingOverlay.show { display: flex; }
+
 #confirmModal {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background: rgba(0,0,0,0.5);
-  display: none;
-  align-items: center;
-  justify-content: center;
+  display: none; align-items: center; justify-content: center;
   z-index: 2000;
 }
 
 #confirmBox {
   background: var(--card-bg);
-  width: 85%;
-  padding: 6vw;
-  border-radius: 20px;
-  text-align: center;
+  width: 85%; max-width: 400px;
+  padding: 25px; border-radius: 20px; text-align: center;
 }
 
 #postazioniMenu {
-  position: fixed;
-  top: 0;
-  right: -100%;
-  width: 85%;
-  height: 100%;
+  position: fixed; top: 0; right: -100%;
+  width: 80%; height: 100%;
   background: var(--card-bg);
-  transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 3000;
-  padding: 6vw;
-  box-shadow: -10px 0 20px rgba(0,0,0,0.2);
+  transition: 0.4s; z-index: 3000;
+  padding: 20px; box-shadow: -5px 0 15px rgba(0,0,0,0.2);
 }
 
 #postazioniMenu.show { right: 0; }
 
 #status {
-  position: fixed;
-  top: 50%; left: 50%;
+  position: fixed; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.85);
-  padding: 6vw;
-  border-radius: 20px;
-  color: white;
-  text-align: center;
-  display: none;
-  z-index: 5000;
+  background: rgba(0,0,0,0.8);
+  padding: 20px; border-radius: 15px;
+  color: white; text-align: center;
+  display: none; z-index: 5000;
 }
 
 #status.show { display: block; }
