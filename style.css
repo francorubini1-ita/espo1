@@ -71,6 +71,15 @@ body {
   transition: color 0.3s;
 }
 
+/* ICONA CRONOMETRO SULLE LABEL ORARIO */
+label[for="start"]::before,
+label[for="end"]::before {
+  content: "⏱️";
+  margin-right: 6px;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
 .field-input {
   width: 100%;
   padding: 12px;
@@ -84,6 +93,21 @@ body {
 
 .time-row { display: flex; gap: 10px; }
 .time-col { flex: 1; }
+
+/* PANNELLO CONFLITTI */
+#detailsPanel {
+  background: #fff2f2;
+  border: 1px solid var(--error);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 15px;
+  display: none;
+  font-size: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #detailsPanel { background: #2c1515; }
+}
 
 /* STATO ERRORE */
 .label-error {
