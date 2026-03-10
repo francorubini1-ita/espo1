@@ -1,33 +1,53 @@
+/* ============================================================
+   1. VARIABILI GLOBALI (Design System)
+   Usiamo le variabili per cambiare colori e dimensioni in un 
+   solo punto e garantire coerenza in tutta l'app.
+   ============================================================ */
 :root {
+  /* Dimensioni basate sulla larghezza della porta (viewport - vw) per il responsive */
   --label-size: 4.5vw;
   --input-size: 4vw;
-  --input-padding: 3vw;
-  --button-size: 4.2vw;
-  --primary: #0066ff;
-  --success: #28a745;
-  --bg: #f5f7fa;
-  --card-bg: #ffffff;
-  --text: #222;
+  --input-padding: 3.5vw;
   --radius: 12px;
-  --shadow: 0 4px 12px rgba(0,0,0,0.1);
-  --ios-border: #d1d1d6;
+
+  /* Palette colori stile iOS/Modern */
+  --primary: #007aff;       /* Blu brillante per azioni principali */
+  --success: #34c759;       /* Verde per conferme e invio */
+  --bg: #f2f2f7;            /* Grigio chiarissimo di sfondo */
+  --card-bg: #ffffff;       /* Bianco per i contenitori */
+  --text: #1c1c1e;          /* Nero quasi puro per il testo */
+  --text-secondary: #8e8e93;/* Grigio per testi meno importanti */
+  --ios-border: #d1d1d6;    /* Colore bordi sottili */
+  --shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
+/* ============================================================
+   2. TEMA SCURO (Dark Mode)
+   Si attiva automaticamente se l'utente ha il sistema in Dark Mode.
+   ============================================================ */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #1c1c1e;
-    --card-bg: #2c2c2e;
-    --text: #f2f2f7;
-    --shadow: 0 6px 18px rgba(0,0,0,0.4);
-    --ios-border: #3a3a3c;
+    --bg: #000000;          /* Sfondo nero profondo */
+    --card-bg: #1c1c1e;     /* Card grigio scuro (stile Apple) */
+    --text: #ffffff;
+    --text-secondary: #ebebf5;
+    --ios-border: #38383a;
+    --shadow: 0 4px 12px rgba(0,0,0,0.3);
   }
 }
 
+/* ============================================================
+   3. STRUTTURA BASE E BODY
+   Impostazioni per font e comportamento dello scrolling.
+   ============================================================ */
 body {
   margin: 0;
-  font-family: -apple-system, sans-serif;
-  background: var(--bg);
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg);
   color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased; /* Rende i font più nitidi su Mac/iOS */
 }
 
 .app-header {
@@ -35,76 +55,151 @@ body {
   color: white;
   padding: 5vw;
   font-size: 6vw;
-  font-weight: bold;
+  font-weight: 800;
   text-align: center;
-  position: sticky;
+  position: sticky; /* Rimane visibile durante lo scroll */
   top: 0;
   z-index: 100;
+  box-shadow: var(--shadow);
 }
 
+/* ============================================================
+   4. FORM E INPUT
+   Gestione dei campi di inserimento dati.
+   ============================================================ */
 .card {
   background: var(--card-bg);
   margin: 4vw;
   padding: 5vw;
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
   border: 1px solid var(--ios-border);
+  box-shadow: var(--shadow);
 }
 
-.field { margin-bottom: 5vw; }
-.field-label { display: block; font-weight: bold; margin-bottom: 2vw; }
+.field {
+  margin-bottom: 4vw;
+}
+
+.field-label {
+  display: block;
+  font-size: var(--label-size);
+  font-weight: 600;
+  margin-bottom: 1.5vw;
+}
+
 .field-input {
   width: 100%;
   padding: var(--input-padding);
-  border-radius: var(--radius);
+  font-size: var(--input-size);
+  border-radius: 10px;
   border: 1px solid var(--ios-border);
-  background: var(--card-bg);
+  background: var(--bg); /* Leggermente diverso dal card-bg per contrasto */
   color: var(--text);
-  box-sizing: border-box;
+  box-sizing: border-box; /* Include padding nel calcolo della larghezza */
+  appearance: none; /* Rimuove stili predefiniti del browser */
 }
 
-.time-row { display: flex; gap: 3vw; }
+/* Layout per i campi orario affiancati */
+.time-row {
+  display: flex;
+  gap: 3vw;
+}
 .time-col { flex: 1; }
 
+/* ============================================================
+   5. BOTTONI E AZIONI
+   Pulsanti principali, secondari e stati disabilitati.
+   ============================================================ */
 button {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 4vw;
-  border-radius: var(--radius);
-  font-weight: bold;
   width: 100%;
+  padding: 4vw;
+  font-size: 4.2vw;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--radius);
   cursor: pointer;
+  transition: opacity 0.2s ease, transform 0.1s active;
   margin-top: 2vw;
 }
 
-button.secondary { background: #6e6e73; }
-#send { background: var(--success); }
-#send:disabled { opacity: 0.5; cursor: not-allowed; }
+button:active { transform: scale(0.98); } /* Effetto pressione */
 
-#formContainer {
-  background: var(--card-bg); /* Modificato da #000 per coerenza */
-  padding: 4vw;
-  margin: 4vw;
-  border-radius: var(--radius);
-  border: 1px solid var(--ios-border);
-}
+#check { background-color: var(--primary); color: white; }
+#send { background-color: var(--success); color: white; margin-top: 4vw; }
+#send:disabled { opacity: 0.3; cursor: not-allowed; }
 
-#status {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.8);
+button.secondary {
+  background-color: #6e6e73;
   color: white;
-  padding: 5vw;
-  border-radius: 20px;
-  display: none;
-  z-index: 1000;
-  text-align: center;
 }
 
-#status.show { display: block; }
+/* Bottone discreto per la mappa */
+.postazioni-inline-btn {
+  background: transparent;
+  color: var(--primary);
+  font-size: 3.8vw;
+  padding: 2vw;
+  text-decoration: underline;
+}
 
+/* ============================================================
+   6. RIEPILOGO (Stile a Card divise per data)
+   Questa sezione gestisce il look "Apple Calendar" dell'immagine.
+   ============================================================ */
+#riepilogo {
+  padding: 0 4vw 10vw 4vw;
+}
+
+/* Titolo della giornata (es. 14 Feb 2026) */
+.riepilogo-date {
+  font-size: 5.5vw;
+  font-weight: 700;
+  margin: 8vw 0 3vw 0;
+  color: var(--text);
+}
+
+/* Card della singola prenotazione */
+.booking-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 4vw;
+  margin-bottom: 3vw;
+  border: 1px solid var(--ios-border);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.booking-info {
+  font-size: 4.2vw;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 1vw;
+}
+
+.booking-time {
+  font-size: 3.8vw;
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   7. COMPONENTI UI (Overlay, Modali, Menu)
+   Elementi che appaiono sopra l'interfaccia principale.
+   ============================================================ */
+
+/* Popup di caricamento a tutto schermo */
+#loadingOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(4px); /* Effetto vetro sfocato */
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 9999;
+}
+
+/* Modale di conferma */
 #confirmModal {
   position: fixed;
   inset: 0;
@@ -112,25 +207,48 @@ button.secondary { background: #6e6e73; }
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000;
 }
 
 #confirmBox {
   background: var(--card-bg);
-  padding: 6vw;
   width: 85%;
-  border-radius: var(--radius);
+  padding: 6vw;
+  border-radius: 20px;
+  text-align: center;
 }
 
+/* Menu laterale scorrevole */
 #postazioniMenu {
   position: fixed;
-  top: 0; right: -100%;
-  width: 85%; height: 100%;
+  top: 0;
+  right: -100%; /* Inizia fuori dallo schermo a destra */
+  width: 85%;
+  height: 100%;
   background: var(--card-bg);
-  transition: 0.3s;
-  z-index: 2000;
-  padding: 5vw;
-  box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+  transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Transizione fluida */
+  z-index: 3000;
+  padding: 6vw;
+  box-shadow: -10px 0 20px rgba(0,0,0,0.2);
 }
 
-#postazioniMenu.show { right: 0; }
+#postazioniMenu.show {
+  right: 0; /* Scivola dentro */
+}
+
+/* Popup di stato (Controllo disponibilità) */
+#status {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.85);
+  padding: 6vw;
+  border-radius: 20px;
+  color: white;
+  text-align: center;
+  display: none;
+  z-index: 5000;
+}
+
+#status.show { display: block; }
