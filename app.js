@@ -1,13 +1,8 @@
 /* =====================================================
    CONFIGURAZIONE E URL API
-   Indirizzo della Web App pubblicata su Google Apps Script
 ===================================================== */
 const API = "https://script.google.com/macros/s/AKfycbw1PkamNFSLC_VTRaNZh8FVkYmqgGx2rTkWykn4bM5eMJeODC4bHMNo73UmoZyRpx5n/exec";
 
-/* =====================================================
-   DATABASE DELLE POSTAZIONI
-   Coordinate per il link alle mappe e nomi delle postazioni
-===================================================== */
 const POSTAZIONI = [
   { id: 1, nome: "Postazione 1", lat: 44.574728, lon: 11.363502 },
   { id: 2, nome: "Postazione 2", lat: 44.577320, lon: 11.361661 },
@@ -19,128 +14,120 @@ const POSTAZIONI = [
   { id: 8, nome: "Postazione 8", lat: 44.00000, lon: 11.00000 }
 ];
 
-/**
- * Genera il link per Google Maps
- * @param {number} lat - Latitudine
- * @param {number} lon - Longitudine
- */
+// Genera il link corretto per Google Maps
 function mapLink(lat, lon) {
-  // Ritorna l'URL formattato per mostrare la posizione esatta con zoom 20x
-  return `http://googleusercontent.com/maps.google.com/maps?q=${lat},${lon}&z=20&t=k`;
+  return `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
 }
 
 /* =====================================================
-   RIFERIMENTI AGLI ELEMENTI DEL DOM (INTERFACCIA)
+   RIFERIMENTI UI
 ===================================================== */
 const checkBtn = document.getElementById("check");
 const sendBtn = document.getElementById("send");
 const statusBox = document.getElementById("status");
-const icon = document.getElementById("icon");
-const msg = document.getElementById("msg");
 const loadingOverlay = document.getElementById("loadingOverlay");
-const confirmModal = document.getElementById("confirmModal");
 
 /* =====================================================
-   FUNZIONE DI RESET UI
-   Ripristina lo stato iniziale dei pannelli e dei pulsanti
+   FUNZIONE RESET INTERFACCIA
 ===================================================== */
 function resetUI() {
-  statusBox.classList.remove("show"); // Nasconde il popup di stato
-  document.getElementById("detailsPanel").style.display = "none"; // Nasconde eventuali conflitti
-  document.getElementById("suggestions").style.display = "none"; // Nasconde suggerimenti
-  sendBtn.disabled = true; // Disabilita il tasto invio finché non viene fatto un nuovo controllo
+  statusBox.classList.remove("show");
+  document.getElementById("detailsPanel").style.display = "none";
+  sendBtn.disabled = true;
+  // Reset colore label data
+  document.querySelector("label[for='date']").classList.remove("label-error");
 }
 
 /* =====================================================
    LOGICA DI CONTROLLO DISPONIBILITÀ
-   Interroga il server per verificare se la fascia oraria è libera
 ===================================================== */
 checkBtn.onclick = async () => {
-  const date = document.getElementById("date").value;
+  const dateInput = document.getElementById("date");
+  const dateValue = dateInput.value;
   const start = document.getElementById("start").value;
   const end = document.getElementById("end").value;
+  const dateLabel = document.querySelector("label[for='date']");
 
-  // Validazione semplice: tutti i campi devono essere compilati
-  if (!date || !start || !end) {
-    alert("Per favore, compila data e orari prima di procedere.");
+  // 1. Reset stato precedente
+  resetUI();
+
+  // 2. Validazione campi vuoti
+  if (!dateValue || !start || !end) {
+    alert("Inserisci data e orari.");
     return;
   }
 
-  resetUI();
+  // 3. CONTROLLO DATA RETROATTIVA
+  const dataScelta = new Date(dateValue);
+  const oggi = new Date();
+  oggi.setHours(0, 0, 0, 0); // Consideriamo solo il giorno, non l'ora attuale
+
+  if (dataScelta < oggi) {
+    dateLabel.classList.add("label-error"); // Diventa rossa (gestito in CSS)
+    alert("Attenzione: non puoi prenotare una data passata.");
+    return;
+  }
+
+  // 4. Avvio richiesta al server
   statusBox.classList.add("show");
-  icon.textContent = "⏳";
-  msg.textContent = "Controllo in corso...";
+  document.getElementById("msg").textContent = "Controllo...";
 
   try {
-    // Chiamata GET al server con i parametri della prenotazione
-    const res = await fetch(`${API}?action=check&date=${date}&start=${start}&end=${end}`);
+    const res = await fetch(`${API}?action=check&date=${dateValue}&start=${start}&end=${end}`);
     const data = await res.json();
-    handleCheck(data); // Gestisce la risposta del server
+    handleCheck(data);
   } catch (e) {
-    icon.textContent = "⚠️";
-    msg.textContent = "Errore di connessione";
+    document.getElementById("msg").textContent = "Errore server";
     setTimeout(resetUI, 3000);
   }
 };
 
-/**
- * Gestisce il risultato del controllo disponibilità
- * @param {Object} res - Risposta JSON dal server
- */
 function handleCheck(res) {
   statusBox.classList.remove("show");
-
   if (res.ok) {
-    // Se disponibile, abilita il pulsante di invio
-    icon.textContent = "✅";
-    msg.textContent = "Orario disponibile!";
+    alert("✅ Disponibile! Inserisci il nome e conferma.");
     sendBtn.disabled = false;
   } else {
-    // Se occupato, mostra i dettagli dei conflitti trovati
-    icon.textContent = "❌";
-    msg.textContent = "Orario occupato";
     document.getElementById("detailsPanel").style.display = "block";
     const list = document.getElementById("conflictList");
-    // Popola la lista dei conflitti
     list.innerHTML = (res.with || []).map(c => `<li>${c.name}: ${c.start}-${c.end}</li>`).join("");
     sendBtn.disabled = true;
   }
 }
 
 /* =====================================================
-   INVIO DELLA PRENOTAZIONE
+   INVIO PRENOTAZIONE
 ===================================================== */
 sendBtn.onclick = () => {
   const name = document.getElementById("name").value.trim();
   
-  // Verifica che sia stato inserito un nome
-  if (name.length < 2) {
-    alert("Inserisci il tuo nome prima di inviare.");
+  if (name.length < 3) {
+    alert("Inserisci un nome valido (minimo 3 caratteri).");
     return;
   }
-  
-  // Mostra il riepilogo nella modale di conferma
+
   const date = document.getElementById("date").value;
   const start = document.getElementById("start").value;
   const end = document.getElementById("end").value;
-  const post = document.getElementById("postazione").value;
+  const postazione = document.getElementById("postazione").value;
 
+  // Mostra riepilogo nella modale
   document.getElementById("confirmText").innerHTML = `
-    <strong>Confermi la prenotazione?</strong><br>
+    <strong>Riepilogo:</strong><br>
     Data: ${date.split("-").reverse().join("/")}<br>
     Orario: ${start} - ${end}<br>
-    Postazione: ${post}<br>
+    Postazione: ${postazione}<br>
     Nome: ${name}
   `;
-  confirmModal.style.display = "flex";
+  document.getElementById("confirmModal").style.display = "flex";
 };
 
-// Chiude la modale senza inviare
-document.getElementById("confirmNo").onclick = () => confirmModal.style.display = "none";
+document.getElementById("confirmNo").onclick = () => {
+  document.getElementById("confirmModal").style.display = "none";
+};
 
-// Conferma definitiva e invio dati via POST
 document.getElementById("confirmYes").onclick = async () => {
-  confirmModal.style.display = "none";
+  document.getElementById("confirmModal").style.display = "none";
   loadingOverlay.style.display = "flex";
   loadingOverlay.classList.add("show");
 
@@ -156,16 +143,14 @@ document.getElementById("confirmYes").onclick = async () => {
   try {
     const res = await fetch(API, { method: "POST", body: JSON.stringify(payload) });
     const r = await res.json();
-    
     if (r.success) {
-      if (navigator.vibrate) navigator.vibrate(30); // Feedback tattile su smartphone
       alert("Prenotazione registrata!");
-      window.location.reload(); // Ricarica la pagina per aggiornare la lista
+      location.reload(); 
     } else {
       alert("Errore: " + r.error);
     }
   } catch (e) {
-    alert("Errore durante l'invio dei dati.");
+    alert("Errore di rete");
   } finally {
     loadingOverlay.classList.remove("show");
     loadingOverlay.style.display = "none";
@@ -173,47 +158,39 @@ document.getElementById("confirmYes").onclick = async () => {
 };
 
 /* =====================================================
-   GESTIONE DEL RIEPILOGO (LOOK & FEEL IMMAGINE)
+   GESTIONE RIEPILOGO (STILE CARD)
 ===================================================== */
 async function caricaRiepilogo() {
   const container = document.getElementById("riepilogo");
-  container.innerHTML = "<div style='text-align:center; opacity:0.6;'>Caricamento prenotazioni...</div>";
-  
+  container.innerHTML = "<div style='opacity:0.5;text-align:center;'>Caricamento...</div>";
   try {
     const res = await fetch(API + "?action=list");
     const bookings = await res.json();
-    renderRiepilogo(bookings); // Genera l'HTML delle card
+    renderRiepilogo(bookings);
   } catch (e) {
-    container.innerHTML = "<div style='text-align:center; color:red;'>Errore caricamento riepilogo.</div>";
+    container.innerHTML = "Errore caricamento dati.";
   }
 }
 
-/**
- * Renderizza le prenotazioni raggruppandole per data
- * @param {Array} bookings - Lista delle prenotazioni dal server
- */
 function renderRiepilogo(bookings) {
   const container = document.getElementById("riepilogo");
   const grouped = {};
 
-  // 1. Organizza le prenotazioni in un oggetto: { "2026-02-14": [booking1, booking2], ... }
+  // Raggruppa per data
   bookings.forEach(b => {
     if (!grouped[b.date]) grouped[b.date] = [];
     grouped[b.date].push(b);
   });
 
-  // 2. Ordina le date in ordine cronologico
   const sortedDates = Object.keys(grouped).sort();
   let html = "";
 
   sortedDates.forEach(date => {
-    // Aggiunge il titolo della data (es. 14 Feb 2026)
     html += `<h3 class="riepilogo-date">${formattaData(date)}</h3>`;
-
-    // Ordina le prenotazioni della giornata per ora di inizio
+    
+    // Ordina per orario
     grouped[date].sort((a, b) => a.start.localeCompare(b.start));
 
-    // 3. Genera le card per ogni prenotazione
     grouped[date].forEach(b => {
       html += `
         <div class="booking-card">
@@ -228,13 +205,9 @@ function renderRiepilogo(bookings) {
     });
   });
 
-  container.innerHTML = html || "<div style='text-align:center; opacity:0.5;'>Nessuna prenotazione presente.</div>";
+  container.innerHTML = html || "Nessuna prenotazione.";
 }
 
-/**
- * Converte una data ISO (YYYY-MM-DD) in formato leggibile (DD Mese YYYY)
- * @param {string} isoDate 
- */
 function formattaData(isoDate) {
   const mesi = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
   const [y, m, d] = isoDate.split("-");
@@ -242,25 +215,28 @@ function formattaData(isoDate) {
 }
 
 /* =====================================================
-   INIZIALIZZAZIONE AL CARICAMENTO DELLA PAGINA
+   INIZIALIZZAZIONE
 ===================================================== */
-window.addEventListener("load", () => {
-  // Popola la lista delle postazioni nel menu laterale
-  const list = document.getElementById("postazioniList");
-  list.innerHTML = POSTAZIONI.map(p => `
-    <div style="padding: 10px 0; border-bottom: 1px solid #3a3a3c;">
-      <strong>${p.nome}</strong><br>
-      <a href="${mapLink(p.lat, p.lon)}" target="_blank" style="color:#007aff; font-size:14px;">📍 Vedi su Mappa</a>
-    </div>
-  `).join("");
+window.onload = () => {
+  // Imposta la data minima selezionabile nel calendario nativo
+  const oggiStr = new Date().toISOString().split("T")[0];
+  document.getElementById("date").setAttribute("min", oggiStr);
 
-  // Gestione apertura/chiusura menu postazioni
-  document.getElementById("openPostazioni").onclick = () => 
-    document.getElementById("postazioniMenu").classList.add("show");
-  
-  document.getElementById("closePostazioni").onclick = () => 
-    document.getElementById("postazioniMenu").classList.remove("show");
-
-  // Carica il riepilogo iniziale
   caricaRiepilogo();
-});
+
+  // Gestione menu postazioni
+  document.getElementById("openPostazioni").onclick = () => {
+    const list = document.getElementById("postazioniList");
+    list.innerHTML = POSTAZIONI.map(p => `
+      <div style="padding:10px 0; border-bottom:1px solid var(--ios-border);">
+        <strong>${p.nome}</strong><br>
+        <a href="${mapLink(p.lat, p.lon)}" target="_blank" style="color:var(--primary);">📍 Vedi Mappa</a>
+      </div>
+    `).join("");
+    document.getElementById("postazioniMenu").classList.add("show");
+  };
+
+  document.getElementById("closePostazioni").onclick = () => {
+    document.getElementById("postazioniMenu").classList.remove("show");
+  };
+};
