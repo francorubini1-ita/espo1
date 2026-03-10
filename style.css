@@ -1,20 +1,16 @@
-/* ============================================================
-   1. VARIABILI E TEMA
-   ============================================================ */
 :root {
-  --primary: #007aff;       /* Blu iOS */
-  --success: #34c759;       /* Verde iOS */
-  --error: #ff3b30;         /* Rosso iOS */
-  --bg: #f2f2f7;            /* Sfondo grigio chiaro */
+  --primary: #007aff;
+  --success: #34c759;
+  --error: #ff3b30;
+  --bg: #f2f2f7;
   --card-bg: #ffffff;
   --text: #1c1c1e;
-  --text-secondary: #8e8e93;
+  --text-secondary: #3a3a3c;
   --ios-border: #d1d1d6;
+  --radius: 14px;
   --shadow: 0 4px 12px rgba(0,0,0,0.08);
-  --radius: 12px;
 }
 
-/* Supporto per Dark Mode automatica */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #000000;
@@ -25,33 +21,27 @@
   }
 }
 
-/* ============================================================
-   2. STRUTTURA GENERALE
-   ============================================================ */
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: var(--bg);
   color: var(--text);
-  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .app-header {
   background: var(--primary);
   color: white;
-  padding: 15px;
-  font-size: 20px;
-  font-weight: 800;
+  padding: 18px;
   text-align: center;
+  font-weight: 800;
+  font-size: 19px;
   position: sticky;
   top: 0;
   z-index: 100;
   box-shadow: var(--shadow);
 }
 
-/* ============================================================
-   3. COMPONENTI DEL FORM
-   ============================================================ */
 .card {
   background: var(--card-bg);
   margin: 15px;
@@ -61,203 +51,133 @@ body {
   box-shadow: var(--shadow);
 }
 
-.field {
-  margin-bottom: 15px;
-}
-
-.field-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  transition: color 0.3s;
-}
-
+.field { margin-bottom: 18px; }
+.field-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
 .field-input {
   width: 100%;
-  padding: 12px;
-  font-size: 16px;
-  border-radius: 10px;
+  padding: 14px;
+  border-radius: 12px;
   border: 1px solid var(--ios-border);
   background: var(--bg);
   color: var(--text);
-  box-sizing: border-box; /* Evita che il padding sballi la larghezza */
+  box-sizing: border-box;
+  font-size: 16px;
+  outline: none;
 }
 
-/* Layout per i campi orario affiancati */
-.time-row {
-  display: flex;
-  gap: 10px;
-}
+.field-input:focus { border-color: var(--primary); }
 
-.time-col {
-  flex: 1;
-}
+.time-row { display: flex; gap: 12px; }
+.time-col { flex: 1; }
 
-/* Animazione di errore per campi non validi */
-.label-error {
-  color: var(--error) !important;
-  animation: shake 0.4s ease-in-out;
-}
-
+.label-error { color: var(--error) !important; animation: shake 0.4s; }
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
 }
 
-/* ============================================================
-   4. PANNELLO CONFLITTI E FEEDBACK
-   ============================================================ */
 #detailsPanel {
+  display: none;
   background: #fff2f2;
   border: 1px solid var(--error);
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 15px;
-  display: none; /* Gestito via JS */
+  padding: 15px;
+  border-radius: 10px;
+  margin: 0 15px 15px 15px;
   font-size: 14px;
 }
 
-@media (prefers-color-scheme: dark) {
-  #detailsPanel { background: #2c1515; }
+.suggest-btn {
+  background: #e1f5fe;
+  color: #0288d1;
+  border: 1px solid #b3e5fc;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  display: inline-block;
+  font-weight: 600;
 }
 
-#status {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.85);
-  padding: 20px;
-  border-radius: 20px;
-  color: white;
-  text-align: center;
-  display: none;
-  z-index: 5000;
-}
-
-#status.show { display: block; }
-
-/* ============================================================
-   5. BOTTONI
-   ============================================================ */
 button {
   width: 100%;
-  padding: 15px;
-  font-size: 16px;
-  font-weight: 700;
-  border: none;
+  padding: 16px;
   border-radius: var(--radius);
+  border: none;
+  font-weight: 700;
+  font-size: 16px;
   cursor: pointer;
-  transition: transform 0.1s, opacity 0.2s;
+  transition: opacity 0.2s, transform 0.1s;
 }
 
 button:active { transform: scale(0.98); }
 
-#check { background: var(--primary); color: white; }
+#check { background: var(--primary); color: white; margin: 0 15px; width: calc(100% - 30px); }
+#send { background: var(--success); color: white; margin: 15px; width: calc(100% - 30px); }
+#send:disabled { opacity: 0.3; pointer-events: none; }
 
-#send {
-  background: var(--success);
-  color: white;
-  margin-top: 15px;
-}
-
-#send:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
+.secondary { background: var(--ios-border); color: var(--text); }
 
 .postazioni-inline-btn {
-  background: transparent;
+  background: none;
   color: var(--primary);
-  text-decoration: none;
   font-size: 14px;
-  margin-top: 5px;
+  padding: 0;
   text-align: left;
-  padding: 5px 0;
-}
-
-.secondary {
-  background: var(--ios-border);
-  color: var(--text);
-}
-
-/* ============================================================
-   6. RIEPILOGO PRENOTAZIONI (Badge A/B)
-   ============================================================ */
-#riepilogo {
-  padding: 0 15px 40px 15px;
+  width: auto;
 }
 
 .booking-card {
   background: var(--card-bg);
+  padding: 16px;
+  margin: 0 15px 12px 15px;
   border-radius: 12px;
-  padding: 15px;
-  margin-bottom: 12px;
   border: 1px solid var(--ios-border);
-  box-shadow: var(--shadow);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* Badge per distinguere Espositore A ed Espositore B */
 .badge {
   display: inline-block;
-  padding: 3px 8px;
+  padding: 3px 10px;
   border-radius: 6px;
   font-size: 11px;
   font-weight: 800;
-  text-transform: uppercase;
   margin-bottom: 8px;
   background: #e5e5ea;
   color: var(--primary);
+  text-transform: uppercase;
 }
 
-.badge-b {
-  background: #fef3c7; /* Giallo tenue per B */
-  color: #92400e;
+.badge-b { background: #fff9c4; color: #f57f17; }
+
+#status {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.85); color: white; padding: 20px; border-radius: 20px;
+  z-index: 2000; display: none; text-align: center; width: 200px;
 }
 
-.booking-info { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-.booking-time { font-size: 14px; color: var(--text-secondary); }
-
-/* ============================================================
-   7. MODALI E OVERLAY
-   ============================================================ */
 #confirmModal, #loadingOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(4px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 3000;
 }
 
-#confirmBox {
-  background: var(--card-bg);
-  width: 85%;
-  max-width: 320px;
-  padding: 25px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-}
+#confirmBox { background: var(--card-bg); padding: 25px; border-radius: 24px; width: 85%; max-width: 320px; text-align: center; }
 
-/* Drawer laterale per le mappe */
 #postazioniMenu {
-  position: fixed;
-  top: 0;
-  right: -100%;
-  width: 85%;
-  height: 100%;
-  background: var(--card-bg);
-  transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 3000;
-  padding: 20px;
-  box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+  position: fixed; top: 0; right: -100%; width: 85%; height: 100%;
+  background: var(--card-bg); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 4000; padding: 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.1);
 }
-
 #postazioniMenu.show { right: 0; }
+
+.spinner {
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  width: 24px; height: 24px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 10px auto;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
