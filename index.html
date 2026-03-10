@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
   <meta charset="utf-8">
-  <title>Prenotazione Espositore</title>
+  <title>Prenotazione Espositori</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -10,10 +10,18 @@
 
 <section id="prenotazione-espositore">
   <div id="app">
-    <div class="app-header">Prenotazione Espositore</div>
+    <div class="app-header">Prenotazione Espositori</div>
 
     <div class="card">
       
+      <div class="field">
+        <label class="field-label" for="espositore">Scegli Espositore</label>
+        <select class="field-input" id="espositore">
+          <option value="A">Espositore A</option>
+          <option value="B">Espositore B</option>
+        </select>
+      </div>
+
       <div class="field">
         <label class="field-label" for="date">Data</label>
         <input class="field-input" type="date" id="date">
@@ -40,7 +48,7 @@
       </div>
 
       <div class="field">
-        <label class="field-label" for="postazione">Postazione</label>
+        <label class="field-label" for="postazione">Postazione (Luogo)</label>
         <select class="field-input" id="postazione">
           <option value="1">Postazione 1</option>
           <option value="2">Postazione 2</option>
@@ -65,10 +73,6 @@
 
     <div id="formContainer">
       <div id="detailsPanel"></div>
-
-      <div id="suggestions">
-        <div id="suggestList"></div>
-      </div>
 
       <button id="check">Controlla la disponibilità</button>
       <button id="send" disabled>Invia una prenotazione</button>
@@ -106,3 +110,4 @@
 <script src="app.js"></script>
 </body>
 </html>
+
