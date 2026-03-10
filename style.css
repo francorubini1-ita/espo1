@@ -1,34 +1,33 @@
 /* ============================================================
    1. VARIABILI GLOBALI (Design System)
-   Usiamo le variabili per cambiare colori e dimensioni in un 
-   solo punto e garantire coerenza in tutta l'app.
+   Usiamo le variabili per gestire i colori in un unico punto.
    ============================================================ */
 :root {
-  /* Dimensioni basate sulla larghezza della porta (viewport - vw) per il responsive */
+  /* Dimensioni e Spaziature */
   --label-size: 4.5vw;
   --input-size: 4vw;
   --input-padding: 3.5vw;
   --radius: 12px;
 
-  /* Palette colori stile iOS/Modern */
-  --primary: #007aff;       /* Blu brillante per azioni principali */
-  --success: #34c759;       /* Verde per conferme e invio */
-  --bg: #f2f2f7;            /* Grigio chiarissimo di sfondo */
-  --card-bg: #ffffff;       /* Bianco per i contenitori */
-  --text: #1c1c1e;          /* Nero quasi puro per il testo */
-  --text-secondary: #8e8e93;/* Grigio per testi meno importanti */
-  --ios-border: #d1d1d6;    /* Colore bordi sottili */
+  /* Palette colori - Tema Chiaro */
+  --primary: #007aff;       /* Blu iOS */
+  --success: #34c759;       /* Verde iOS */
+  --error: #ff3b30;         /* Rosso iOS */
+  --bg: #f2f2f7;            /* Grigio chiaro sfondo */
+  --card-bg: #ffffff;       /* Bianco card */
+  --text: #1c1c1e;          /* Testo scuro */
+  --text-secondary: #8e8e93;/* Testo grigio */
+  --ios-border: #d1d1d6;    /* Bordi chiari */
   --shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 /* ============================================================
-   2. TEMA SCURO (Dark Mode)
-   Si attiva automaticamente se l'utente ha il sistema in Dark Mode.
+   2. TEMA SCURO (Dark Mode automatico)
    ============================================================ */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #000000;          /* Sfondo nero profondo */
-    --card-bg: #1c1c1e;     /* Card grigio scuro (stile Apple) */
+    --bg: #000000;
+    --card-bg: #1c1c1e;
     --text: #ffffff;
     --text-secondary: #ebebf5;
     --ios-border: #38383a;
@@ -37,8 +36,7 @@
 }
 
 /* ============================================================
-   3. STRUTTURA BASE E BODY
-   Impostazioni per font e comportamento dello scrolling.
+   3. STRUTTURA BASE
    ============================================================ */
 body {
   margin: 0;
@@ -47,7 +45,7 @@ body {
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.5;
-  -webkit-font-smoothing: antialiased; /* Rende i font più nitidi su Mac/iOS */
+  -webkit-font-smoothing: antialiased;
 }
 
 .app-header {
@@ -57,7 +55,7 @@ body {
   font-size: 6vw;
   font-weight: 800;
   text-align: center;
-  position: sticky; /* Rimane visibile durante lo scroll */
+  position: sticky;
   top: 0;
   z-index: 100;
   box-shadow: var(--shadow);
@@ -65,7 +63,6 @@ body {
 
 /* ============================================================
    4. FORM E INPUT
-   Gestione dei campi di inserimento dati.
    ============================================================ */
 .card {
   background: var(--card-bg);
@@ -85,6 +82,7 @@ body {
   font-size: var(--label-size);
   font-weight: 600;
   margin-bottom: 1.5vw;
+  transition: color 0.3s ease; /* Transizione fluida per l'errore */
 }
 
 .field-input {
@@ -93,13 +91,12 @@ body {
   font-size: var(--input-size);
   border-radius: 10px;
   border: 1px solid var(--ios-border);
-  background: var(--bg); /* Leggermente diverso dal card-bg per contrasto */
+  background: var(--bg);
   color: var(--text);
-  box-sizing: border-box; /* Include padding nel calcolo della larghezza */
-  appearance: none; /* Rimuove stili predefiniti del browser */
+  box-sizing: border-box;
 }
 
-/* Layout per i campi orario affiancati */
+/* Layout per orari affiancati */
 .time-row {
   display: flex;
   gap: 3vw;
@@ -107,8 +104,22 @@ body {
 .time-col { flex: 1; }
 
 /* ============================================================
-   5. BOTTONI E AZIONI
-   Pulsanti principali, secondari e stati disabilitati.
+   5. STATI DI ERRORE (Novità: Data retroattiva)
+   ============================================================ */
+.label-error {
+  color: var(--error) !important;
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-6px); }
+}
+
+/* ============================================================
+   6. BOTTONI
    ============================================================ */
 button {
   width: 100%;
@@ -118,39 +129,30 @@ button {
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
-  transition: opacity 0.2s ease, transform 0.1s active;
+  transition: opacity 0.2s ease;
   margin-top: 2vw;
 }
-
-button:active { transform: scale(0.98); } /* Effetto pressione */
 
 #check { background-color: var(--primary); color: white; }
 #send { background-color: var(--success); color: white; margin-top: 4vw; }
 #send:disabled { opacity: 0.3; cursor: not-allowed; }
 
-button.secondary {
-  background-color: #6e6e73;
-  color: white;
-}
+button.secondary { background-color: #6e6e73; color: white; }
 
-/* Bottone discreto per la mappa */
 .postazioni-inline-btn {
   background: transparent;
   color: var(--primary);
-  font-size: 3.8vw;
-  padding: 2vw;
   text-decoration: underline;
+  padding: 2vw;
 }
 
 /* ============================================================
-   6. RIEPILOGO (Stile a Card divise per data)
-   Questa sezione gestisce il look "Apple Calendar" dell'immagine.
+   7. RIEPILOGO (Stile a Card come da immagine)
    ============================================================ */
 #riepilogo {
   padding: 0 4vw 10vw 4vw;
 }
 
-/* Titolo della giornata (es. 14 Feb 2026) */
 .riepilogo-date {
   font-size: 5.5vw;
   font-weight: 700;
@@ -158,7 +160,6 @@ button.secondary {
   color: var(--text);
 }
 
-/* Card della singola prenotazione */
 .booking-card {
   background: var(--card-bg);
   border-radius: 12px;
@@ -172,7 +173,6 @@ button.secondary {
   font-size: 4.2vw;
   font-weight: 600;
   color: var(--text);
-  margin-bottom: 1vw;
 }
 
 .booking-time {
@@ -181,25 +181,20 @@ button.secondary {
 }
 
 /* ============================================================
-   7. COMPONENTI UI (Overlay, Modali, Menu)
-   Elementi che appaiono sopra l'interfaccia principale.
+   8. COMPONENTI UI (Overlay, Modali, Menu)
    ============================================================ */
-
-/* Popup di caricamento a tutto schermo */
 #loadingOverlay {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(4px); /* Effetto vetro sfocato */
+  backdrop-filter: blur(5px);
   display: none;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   color: white;
   z-index: 9999;
 }
 
-/* Modale di conferma */
 #confirmModal {
   position: fixed;
   inset: 0;
@@ -218,29 +213,24 @@ button.secondary {
   text-align: center;
 }
 
-/* Menu laterale scorrevole */
 #postazioniMenu {
   position: fixed;
   top: 0;
-  right: -100%; /* Inizia fuori dallo schermo a destra */
+  right: -100%;
   width: 85%;
   height: 100%;
   background: var(--card-bg);
-  transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); /* Transizione fluida */
+  transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 3000;
   padding: 6vw;
   box-shadow: -10px 0 20px rgba(0,0,0,0.2);
 }
 
-#postazioniMenu.show {
-  right: 0; /* Scivola dentro */
-}
+#postazioniMenu.show { right: 0; }
 
-/* Popup di stato (Controllo disponibilità) */
 #status {
   position: fixed;
-  top: 50%;
-  left: 50%;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   background: rgba(0,0,0,0.85);
   padding: 6vw;
