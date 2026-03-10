@@ -1,11 +1,5 @@
-/* =====================================================
-   URL DELLA WEB APP
-===================================================== */
 const API = "https://script.google.com/macros/s/AKfycbw1PkamNFSLC_VTRaNZh8FVkYmqgGx2rTkWykn4bM5eMJeODC4bHMNo73UmoZyRpx5n/exec";
 
-/* =====================================================
-   POSTAZIONI + LINK MAPPA
-===================================================== */
 const POSTAZIONI = [
   { id: 1, nome: "Postazione 1", lat: 44.574728, lon: 11.363502 },
   { id: 2, nome: "Postazione 2", lat: 44.577320, lon: 11.361661 },
@@ -17,266 +11,90 @@ const POSTAZIONI = [
   { id: 8, nome: "Postazione 8", lat: 44.00000, lon: 11.00000 }
 ];
 
+// Corretto il link mappa e rimosso lo 0 errato
 function mapLink(lat, lon) {
-  return `https://www.google.com/maps/@${lat},${lon},20z/data=!3m1!1e3`;
+  return `https://www.google.com/maps?q=${lat},${lon}`;
 }
 
-
-/* =====================================================
-   RIFERIMENTI AGLI ELEMENTI DEL DOM
-===================================================== */
 const checkBtn = document.getElementById("check");
 const sendBtn = document.getElementById("send");
 const statusBox = document.getElementById("status");
-const icon = document.getElementById("icon");
-const msg = document.getElementById("msg");
-const detailsPanel = document.getElementById("detailsPanel");
-const conflictList = document.getElementById("conflictList");
-const suggestionsDiv = document.getElementById("suggestions");
-const suggestList = document.getElementById("suggestList");
-const confirmModal = document.getElementById("confirmModal");
-const confirmText = document.getElementById("confirmText");
-const confirmYes = document.getElementById("confirmYes");
-const confirmNo = document.getElementById("confirmNo");
 const loadingOverlay = document.getElementById("loadingOverlay");
 
-/* =====================================================
-   CONTROLLO ORARI (IN TEMPO REALE)
-===================================================== */
-const startInput = document.getElementById("start");
-const endInput = document.getElementById("end");
-const labelEnd = document.getElementById("labelEnd");   // ⭐ AGGIUNTO
-
-function controllaOrari() {
-  const start = startInput.value;
-  const end = endInput.value;
-
-  labelEnd.classList.remove("label-error");  // ⭐ AGGIUNTO
-
-  if (!start || !end) {
-    endInput.classList.remove("input-error");
-    return false;
-  }
-
-  if (end <= start) {
-    endInput.classList.add("input-error");
-    labelEnd.classList.add("label-error");   // ⭐ AGGIUNTO
-    return true;
-  }
-
-  endInput.classList.remove("input-error");
-  return false;
-}
-
-startInput.addEventListener("change", controllaOrari);
-endInput.addEventListener("change", controllaOrari);
-
-
-/* =====================================================
-   CONTROLLO DATA < OGGI (NUOVA FUNZIONE)
-===================================================== */
-const labelDate = document.getElementById("labelDate");   // ⭐ AGGIUNTO
-
-function controllaDataPassata() {
-  const oggi = new Date();
-  oggi.setHours(0,0,0,0);
-
-  const date = document.getElementById("date").value;
-  labelDate.classList.remove("label-error");
-
-  if (!date) return false;
-
-  const [y, m, d] = date.split("-");
-  const dataSel = new Date(y, m - 1, d);
-
-  if (dataSel < oggi) {
-    labelDate.classList.add("label-error");
-    return true;
-  }
-
-  return false;
-}
-
-document.getElementById("date").addEventListener("change", controllaDataPassata);  // ⭐ AGGIUNTO
-
-
-/* =====================================================
-   FUNZIONE DI RESET UI
-===================================================== */
 function resetUI() {
   statusBox.classList.remove("show");
-  icon.textContent = "";
-  msg.textContent = "";
-
-  detailsPanel.style.display = "none";
-  suggestionsDiv.style.display = "none";
-  conflictList.innerHTML = "";
-  suggestList.innerHTML = "";
-
-  confirmModal.style.display = "none";
-  confirmYes.disabled = false;
-  confirmYes.style.opacity = "1";
-
-  loadingOverlay.classList.remove("show");
-  loadingOverlay.style.display = "none";
-  loadingOverlay.style.pointerEvents = "none";
-
+  document.getElementById("detailsPanel").style.display = "none";
+  document.getElementById("suggestions").style.display = "none";
   sendBtn.disabled = true;
 }
 
-/* =====================================================
-   CONTROLLO DISPONIBILITÀ
-===================================================== */
+// CONTROLLO DISPONIBILITÀ
 checkBtn.onclick = async () => {
-  document.activeElement.blur();
-
   const date = document.getElementById("date").value;
   const start = document.getElementById("start").value;
   const end = document.getElementById("end").value;
 
   if (!date || !start || !end) {
-    alert("Compila la data e gli orari");
-    return;
-  }
-
-  if (controllaDataPassata()) {
-    alert("La data selezionata è nel passato.");
-    return;
-  }
-
-  if (controllaOrari()) {
-    alert("L'orario di fine deve essere successivo all'orario di inizio.");
+    alert("Seleziona data e orari completi.");
     return;
   }
 
   resetUI();
-
   statusBox.classList.add("show");
-  icon.textContent = "⏳";
-  msg.textContent = "Controllo...";
+  document.getElementById("msg").textContent = "Controllo in corso...";
 
   try {
     const res = await fetch(`${API}?action=check&date=${date}&start=${start}&end=${end}`);
     const data = await res.json();
     handleCheck(data);
   } catch (e) {
-    icon.textContent = "⚠️";
-    msg.textContent = "Errore server";
-
-    setTimeout(() => statusBox.classList.remove("show"), 3000);
+    document.getElementById("msg").textContent = "Errore di connessione";
+    setTimeout(resetUI, 3000);
   }
 };
 
-/* =====================================================
-   GESTIONE RISPOSTA CONTROLLO
-===================================================== */
 function handleCheck(res) {
   statusBox.classList.remove("show");
-
-  if (!res || res.error) {
-    icon.textContent = "⚠️";
-    msg.textContent = res?.error || "Errore";
-    sendBtn.disabled = true;
-    return;
-  }
-
   if (res.ok) {
-    icon.textContent = "✅";
-    msg.textContent = "Orario disponibile";
+    alert("✅ Orario disponibile! Ora inserisci il tuo nome e conferma.");
     sendBtn.disabled = false;
-    return;
-  }
-
-  icon.textContent = "❌";
-  msg.textContent = "Sovrapposizione";
-  sendBtn.disabled = true;
-
-  detailsPanel.style.display = "block";
-  conflictList.innerHTML = "";
-
-  (res.with || []).forEach(c => {
-    const li = document.createElement("li");
-    li.textContent = `${c.name} — ${c.start}–${c.end}`;
-    conflictList.appendChild(li);
-  });
-
-  suggestionsDiv.style.display = "block";
-  suggestList.innerHTML = `
-    <div style="
-      font-size: 5vw;
-      font-weight: 700;
-      color: #ffcc00;
-      margin-bottom: 4vw;
-    ">
-      Modifica il tuo orario di richiesta
-    </div>
-
-    <button id="backToForm" style="
-      padding: 3vw 4vw;
-      font-size: 4.2vw;
-      font-weight: 600;
-      border-radius: 12px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      width: 100%;
-      cursor: pointer;
-    ">
-      Ritorna alla prenotazione
-    </button>
-  `;
-
-  const backBtn = document.getElementById("backToForm");
-  if (backBtn) {
-    backBtn.onclick = () => {
-      suggestionsDiv.style.display = "none";
-      detailsPanel.style.display = "none";
-
-      document.getElementById("formContainer").scrollIntoView({
-        behavior: "smooth"
-      });
-    };
+  } else {
+    document.getElementById("detailsPanel").style.display = "block";
+    const list = document.getElementById("conflictList");
+    list.innerHTML = (res.with || []).map(c => `<li>${c.name}: ${c.start}-${c.end}</li>`).join("");
+    sendBtn.disabled = true;
   }
 }
 
-/* =====================================================
-   INVIO PRENOTAZIONE (APERTURA MODALE)
-===================================================== */
+// INVIO PRENOTAZIONE
 sendBtn.onclick = () => {
+  const name = document.getElementById("name").value.trim();
+  if (name.length < 3) {
+    alert("Inserisci un nome valido per continuare.");
+    return;
+  }
+  
   const date = document.getElementById("date").value;
-  const start = document.getElementById("start").value;
-  const end = document.getElementById("end").value;
-  const name = document.getElementById("name").value;
   const postazione = document.getElementById("postazione").value;
-
-  confirmText.textContent =
-    `${date.split("-").reverse().join("/")} ${start}–${end} — ${name} (Postazione ${postazione})`;
-
-  confirmModal.style.display = "flex";
-
-  setTimeout(() => {
-    if (confirmModal.style.display === "flex") {
-      confirmModal.style.display = "none";
-    }
-  }, 15000);
+  
+  document.getElementById("confirmText").innerHTML = `
+    <strong>Data:</strong> ${date}<br>
+    <strong>Postazione:</strong> ${postazione}<br>
+    <strong>Nome:</strong> ${name}
+  `;
+  document.getElementById("confirmModal").style.display = "flex";
 };
 
-/* =====================================================
-   CHIUSURA MODALE
-===================================================== */
-confirmNo.onclick = () => {
-  confirmModal.style.display = "none";
+document.getElementById("confirmNo").onclick = () => {
+  document.getElementById("confirmModal").style.display = "none";
 };
 
-/* =====================================================
-   CONFERMA INVIO PRENOTAZIONE
-===================================================== */
-confirmYes.onclick = async () => {
-  confirmYes.disabled = true;
-  confirmYes.style.opacity = "0.5";
-  confirmModal.style.display = "none";
+document.getElementById("confirmYes").onclick = async () => {
+  document.getElementById("confirmModal").style.display = "none";
+  loadingOverlay.style.display = "flex";
+  loadingOverlay.style.opacity = "1";
 
-  const data = {
+  const payload = {
     action: "submit",
     date: document.getElementById("date").value,
     start: document.getElementById("start").value,
@@ -286,169 +104,58 @@ confirmYes.onclick = async () => {
   };
 
   try {
-    const res = await fetch(API, {
-      method: "POST",
-      body: JSON.stringify(data)
-    });
-
+    const res = await fetch(API, { method: "POST", body: JSON.stringify(payload) });
     const r = await res.json();
-
+    
     if (r.success) {
-      if (navigator.vibrate) navigator.vibrate(30);
-
-      loadingOverlay.style.display = "flex";
-      loadingOverlay.style.pointerEvents = "auto";
-      setTimeout(() => loadingOverlay.classList.add("show"), 20);
-
-      setTimeout(() => {
-        loadingOverlay.classList.remove("show");
-        loadingOverlay.style.display = "none";
-        loadingOverlay.style.pointerEvents = "none";
-        window.location.reload();
-      }, 3000);
-
-      setTimeout(() => {
-        loadingOverlay.classList.remove("show");
-        loadingOverlay.style.display = "none";
-        loadingOverlay.style.pointerEvents = "none";
-      }, 7000);
-
+      alert("Prenotazione registrata!");
+      location.reload(); // Semplice e pulito per resettare tutto
     } else {
       alert("Errore: " + r.error);
-      confirmYes.disabled = false;
-      confirmYes.style.opacity = "1";
     }
-
   } catch (e) {
     alert("Errore di rete");
-    confirmYes.disabled = false;
-    confirmYes.style.opacity = "1";
+  } finally {
+    loadingOverlay.style.display = "none";
   }
 };
 
-/* =====================================================
-   EFFETTO RIPPLE + VIBRAZIONE
-===================================================== */
-document.querySelectorAll("button").forEach(btn => {
-  btn.addEventListener("click", function(e) {
-    if (navigator.vibrate) navigator.vibrate(15);
-
-    const rect = btn.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    btn.style.setProperty("--ripple-x", `${x}px`);
-    btn.style.setProperty("--ripple-y", `${y}px`);
-
-    btn.classList.remove("ripple-active");
-
-    setTimeout(() => btn.classList.add("ripple-active"), 10);
-    setTimeout(() => btn.classList.remove("ripple-active"), 500);
-  });
-});
-
-/* =====================================================
-   MENU LATERALE POSTAZIONI
-===================================================== */
-window.addEventListener("load", () => {
-  const menu = document.getElementById("postazioniMenu");
-  const openBtn = document.getElementById("openPostazioni");
-  const closeBtn = document.getElementById("closePostazioni");
-  const list = document.getElementById("postazioniList");
-
-  list.innerHTML = POSTAZIONI.map(p => `
-    <div>
-      <strong>${p.nome}</strong><br>
-      <a href="${mapLink(p.lat, p.lon)}" target="_blank">Apri sulla mappa</a>
-    </div>
-  `).join("");
-
-  openBtn.onclick = () => menu.classList.add("show");
-  closeBtn.onclick = () => menu.classList.remove("show");
-});
-
-/* =====================================================
-   SCROLL AUTOMATICO AL RIEPILOGO DOPO RELOAD
-===================================================== */
-window.addEventListener("load", () => {
-  if (window.location.hash === "#riepilogo") {
-    const section = document.getElementById("riepilogo");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" });
-    }
-  }
-});
-
-/* =====================================================
-   RIEPILOGO — CARICAMENTO
-===================================================== */
+// GESTIONE RIEPILOGO
 async function caricaRiepilogo() {
+  const container = document.getElementById("riepilogo");
+  container.innerHTML = "Caricamento...";
   try {
     const res = await fetch(API + "?action=list");
-
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("Errore HTTP:", res.status, text);
-      document.getElementById("riepilogo").innerHTML =
-        "<div style='font-size:4vw;color:#666;'>Errore nel caricamento</div>";
-      return;
-    }
-
     const bookings = await res.json();
-    renderRiepilogo(bookings);
-
-  } catch (err) {
-    console.error("Errore fetch:", err);
-    document.getElementById("riepilogo").innerHTML =
-      "<div style='font-size:4vw;color:#666;'>Errore di connessione</div>";
+    
+    let html = "";
+    bookings.forEach(b => {
+      html += `<div class="booking">
+        <strong>${b.date}</strong> - Post. ${b.postazione}<br>
+        ${b.start} / ${b.end} | <em>${b.name}</em>
+      </div>`;
+    });
+    container.innerHTML = html || "Nessuna prenotazione presente.";
+  } catch (e) {
+    container.innerHTML = "Impossibile caricare il riepilogo.";
   }
 }
 
-/* =====================================================
-   RIEPILOGO — RENDER
-===================================================== */
-function renderRiepilogo(bookings) {
-  const grouped = {};
+// GESTIONE MENU LATERALE
+document.getElementById("openPostazioni").onclick = () => {
+  const list = document.getElementById("postazioniList");
+  list.innerHTML = POSTAZIONI.map(p => `
+    <div style="margin-bottom:15px; border-bottom:1px solid #ccc; padding-bottom:5px;">
+      <strong>${p.nome}</strong><br>
+      <a href="${mapLink(p.lat, p.lon)}" target="_blank">📍 Vedi su Mappa</a>
+    </div>
+  `).join("");
+  document.getElementById("postazioniMenu").classList.add("show");
+};
 
-  bookings.forEach(b => {
-    if (!grouped[b.date]) grouped[b.date] = [];
-    grouped[b.date].push(b);
-  });
+document.getElementById("closePostazioni").onclick = () => {
+  document.getElementById("postazioniMenu").classList.remove("show");
+};
 
-  const dates = Object.keys(grouped).sort();
-  let html = "";
-
-  dates.forEach(date => {
-    html += `<h3>${formattaData(date)}</h3>`;
-
-    grouped[date].sort((a, b) => a.start.localeCompare(b.start));
-
-    grouped[date].forEach(b => {
-      html += `
-        <div class="booking">
-          <strong>Post. ${b.postazione}</strong> - ${b.name}<br>
-          dalle ${b.start} alle ${b.end}
-        </div>
-      `;
-    });
-  });
-
-  document.getElementById("riepilogo").innerHTML = html;
-}
-
-/* =====================================================
-   FORMATTA DATA
-===================================================== */
-function formattaData(d) {
-  const mesi = ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"];
-  const [y, m, day] = d.split("-");
-  return `${parseInt(day)} ${mesi[parseInt(m)-1]} ${y}`;
-}
-
-/* =====================================================
-   CARICAMENTO AUTOMATICO RIEPILOGO
-===================================================== */
-window.addEventListener("load", () => {
-  resetUI();
-  caricaRiepilogo();
-});
+// Inizializzazione
+window.onload = caricaRiepilogo;
