@@ -34,14 +34,14 @@ document.getElementById("check").onclick = async () => {
   const scelta = new Date(dateVal).setHours(0,0,0,0);
   if (scelta < oggi) {
     document.querySelector("label[for='date']").classList.add("label-error");
-    return alert("Non puoi prenotare una data nel passato.");
+    return alert("Non puoi prenotare una data nel passato...");
   }
 
   // 4. Controllo Coerenza Oraria (Fine > Inizio)
   if (start >= end) {
     document.querySelector("label[for='start']").classList.add("label-error");
     document.querySelector("label[for='end']").classList.add("label-error");
-    return alert("L'orario di fine deve essere dopo l'inizio.");
+    return alert("L'orario di fine deve essere dopo l'inizio...");
   }
 
   // 5. Chiamata API per verifica disponibilità
