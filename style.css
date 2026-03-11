@@ -1,4 +1,6 @@
-/* Variabili per design iOS-like */
+/* ============================================================
+   VARIABILI E TEMA (iOS Design)
+   ============================================================ */
 :root {
   --primary: #007aff;
   --success: #34c759;
@@ -6,11 +8,11 @@
   --bg: #f2f2f7;
   --card-bg: #ffffff;
   --text: #1c1c1e;
+  --text-secondary: #8e8e93;
   --ios-border: #d1d1d6;
   --radius: 14px;
 }
 
-/* Modalità scura automatica */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #000000;
@@ -25,32 +27,38 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: var(--bg);
   color: var(--text);
-  overflow-x: hidden; /* Evita scroll orizzontale per via della tendina */
+  overflow-x: hidden;
 }
 
 .app-header {
   background: var(--primary);
   color: white;
   padding: 18px;
+  font-weight: 800;
   text-align: center;
-  font-weight: 700;
-  font-size: 19px;
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
+/* ============================================================
+   SCHEDE E CAMPI INPUT
+   ============================================================ */
 .card {
   background: var(--card-bg);
   margin: 15px;
   padding: 20px;
   border-radius: var(--radius);
   border: 1px solid var(--ios-border);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-.field { margin-bottom: 18px; }
-.field-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+.field { margin-bottom: 15px; }
+.field-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+
+/* Icona Cronometro ⏱️ */
+label[for="start"]::before, label[for="end"]::before {
+  content: "⏱️ ";
+}
 
 .field-input {
   width: 100%;
@@ -59,14 +67,16 @@ body {
   border: 1px solid var(--ios-border);
   background: var(--bg);
   color: var(--text);
-  box-sizing: border-box;
   font-size: 16px;
+  box-sizing: border-box;
 }
 
 .time-row { display: flex; gap: 10px; }
 .time-col { flex: 1; }
 
-/* Pulsanti */
+/* ============================================================
+   BOTTONI E AZIONI
+   ============================================================ */
 button {
   width: 100%;
   padding: 16px;
@@ -79,74 +89,78 @@ button {
 
 #check { background: var(--primary); color: white; margin: 0 15px; width: calc(100% - 30px); }
 #send { background: var(--success); color: white; margin: 15px; width: calc(100% - 30px); }
-#send:disabled { opacity: 0.3; }
+#send:disabled { opacity: 0.3; pointer-events: none; }
 
 .secondary { background: var(--ios-border); color: var(--text); }
 
 .postazioni-inline-btn {
-  background: none;
+  background: transparent; color: var(--primary); font-size: 14px; text-decoration: underline; padding: 10px 0; text-align: left;
+}
+
+/* ============================================================
+   RIEPILOGO RAGGRUPPATO
+   ============================================================ */
+.date-group-header {
+  margin: 20px 15px 5px;
+  font-size: 13px;
+  font-weight: 800;
   color: var(--primary);
-  text-align: left;
-  padding: 0;
-  font-size: 14px;
+  text-transform: uppercase;
 }
-
-/* STILE TENDINA LATERALE (DRAWER) */
-#postazioniMenu {
-  position: fixed;
-  top: 0;
-  right: -100%; /* Inizia fuori dallo schermo a destra */
-  width: 85%;
-  height: 100%;
-  background: var(--card-bg);
-  transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 2000;
-  padding: 25px;
-  box-shadow: -5px 0 15px rgba(0,0,0,0.15);
-  overflow-y: auto;
-}
-
-/* Classe aggiunta via JS per far scivolare la tendina */
-#postazioniMenu.show {
-  right: 0;
-}
-
-/* Spinner e Modali */
-.spinner {
-  border: 3px solid rgba(255,255,255,0.3);
-  border-top: 3px solid white;
-  border-radius: 50%;
-  width: 24px; height: 24px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 10px;
-}
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-#confirmModal, #loadingOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-  display: none; align-items: center; justify-content: center; z-index: 3000;
-}
-
-#confirmBox { background: var(--card-bg); padding: 25px; border-radius: 20px; width: 80%; text-align: center; }
 
 .booking-card {
   background: var(--card-bg);
   padding: 15px;
-  margin: 10px 15px;
+  margin: 0 15px 10px;
   border-radius: 12px;
   border: 1px solid var(--ios-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
+/* Badge per differenziare Espositore A e B */
 .badge {
-  display: inline-block;
-  padding: 3px 10px;
+  font-size: 10px;
+  padding: 3px 8px;
   border-radius: 6px;
-  font-size: 11px;
   font-weight: 800;
-  margin-bottom: 8px;
   background: #e5e5ea;
   color: var(--primary);
 }
-
 .badge-b { background: #fff9c4; color: #f57f17; }
+
+/* ============================================================
+   OVERLAY E TENDINA
+   ============================================================ */
+#postazioniMenu {
+  position: fixed; top: 0; right: -100%; width: 85%; height: 100%;
+  background: var(--card-bg); transition: 0.4s; z-index: 2000;
+  padding: 20px; box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+}
+#postazioniMenu.show { right: 0; }
+
+#loadingOverlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: none; align-items: center; justify-content: center; z-index: 3000; color: white; flex-direction: column;
+}
+
+.spinner {
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  width: 30px; height: 30px;
+  animation: spin 1s linear infinite; margin-bottom: 10px;
+}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+#confirmModal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  display: none; align-items: center; justify-content: center; z-index: 4000;
+}
+#confirmBox { background: var(--card-bg); padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; }
+
+.label-error { color: var(--error) !important; animation: shake 0.4s; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
 
