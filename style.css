@@ -1,3 +1,4 @@
+/* Definizione variabili di design (iOS Design Language) */
 :root {
   --primary: #007aff;
   --success: #34c759;
@@ -11,6 +12,7 @@
   --shadow: 0 4px 14px rgba(0,0,0,0.07);
 }
 
+/* Adattamento automatico al tema scuro (Dark Mode) */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #000000;
@@ -23,12 +25,13 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background-color: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
 }
 
+/* Header fisso con ombra leggera */
 .app-header {
   background: var(--primary);
   color: white;
@@ -41,6 +44,7 @@ body {
   z-index: 100;
 }
 
+/* Stile schede bianche stondate */
 .card {
   background: var(--card-bg);
   margin: 15px;
@@ -52,6 +56,8 @@ body {
 
 .field { margin-bottom: 20px; }
 .field-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-secondary); }
+
+/* Input stilizzati con bordi morbidi */
 .field-input {
   width: 100%;
   padding: 14px;
@@ -69,13 +75,15 @@ body {
 .time-row { display: flex; gap: 15px; }
 .time-col { flex: 1; }
 
-.label-error { color: var(--error) !important; animation: shake 0.4s; }
+/* Animazione in caso di errore (shake) */
+.label-error { color: var(--error) !important; animation: shake 1.0s; }
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
 }
 
+/* Pannello per visualizzare i dettagli dei conflitti */
 #detailsPanel {
   display: none;
   background: #fff5f5;
@@ -86,6 +94,7 @@ body {
   font-size: 14px;
 }
 
+/* Pulsanti suggerimento orario */
 .suggest-btn {
   background: #007aff15;
   color: var(--primary);
@@ -106,7 +115,6 @@ button {
   font-weight: 700;
   font-size: 17px;
   cursor: pointer;
-  transition: transform 0.1s, opacity 0.2s;
 }
 
 button:active { transform: scale(0.97); opacity: 0.9; }
@@ -117,23 +125,13 @@ button:active { transform: scale(0.97); opacity: 0.9; }
 
 .secondary { background: var(--ios-border); color: var(--text); }
 
-.postazioni-inline-btn {
-  background: none;
-  color: var(--primary);
-  font-size: 14px;
-  padding: 0;
-  text-align: left;
-  width: auto;
-  font-weight: 500;
-}
-
+/* Badge colorati per distinguere l'espositore A (Blu) dal B (Giallo) */
 .booking-card {
   background: var(--card-bg);
   padding: 18px;
   margin: 0 15px 15px 15px;
   border-radius: 16px;
   border: 1px solid var(--ios-border);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
 .badge {
@@ -145,17 +143,12 @@ button:active { transform: scale(0.97); opacity: 0.9; }
   margin-bottom: 10px;
   background: #e5e5ea;
   color: var(--primary);
-  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .badge-b { background: #fff9c4; color: #f57f17; }
 
-#status {
-  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.85); color: white; padding: 25px; border-radius: 20px;
-  z-index: 2000; display: none; text-align: center; min-width: 150px;
-}
-
+/* Overlay e Modali */
 #confirmModal, #loadingOverlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.4);
   backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 3000;
@@ -163,13 +156,7 @@ button:active { transform: scale(0.97); opacity: 0.9; }
 
 #confirmBox { background: var(--card-bg); padding: 30px; border-radius: 28px; width: 85%; max-width: 320px; text-align: center; }
 
-#postazioniMenu {
-  position: fixed; top: 0; right: -100%; width: 88%; height: 100%;
-  background: var(--card-bg); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 4000; padding: 25px; box-shadow: -10px 0 30px rgba(0,0,0,0.15);
-}
-#postazioniMenu.show { right: 0; }
-
+/* Animazione Spinner Caricamento */
 .spinner {
   border: 3px solid rgba(255,255,255,0.2);
   border-top: 3px solid white;
