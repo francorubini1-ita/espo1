@@ -56,17 +56,17 @@
         </select>
       </div>
 
-      <button id="openPostazioni" class="postazioni-inline-btn">📍 Mappa Postazioni</button>
+      <button id="openPostazioni" class="postazioni-inline-btn">📍 Mappa delle Postazioni</button>
     </div>
 
     <div id="formContainer">
       <div id="detailsPanel"></div>
-      <button id="check">Controlla la disponibilità</button>
+      <button id="check">Controlla la disponibilità...</button>
       <button id="send" disabled>Invia la prenotazione</button>
     </div>
 
     <h3 class="title" style="margin: 20px 15px 10px;">Riepilogo prenotazioni</h3>
-    <div class="update-wrap" style="text-align:right; padding-right:15px;">
+    <div class="update-wrap" style="text-align:center; padding-right:15px;">
         <button class="secondary" style="width:auto; padding:5px 15px; font-size:12px;" onclick="caricaRiepilogo()">🔄 Aggiorna</button>
     </div>
     <div id="riepilogo"></div>
@@ -74,8 +74,8 @@
     <div id="confirmModal">
       <div id="confirmBox">
         <h3>Confermi i dati?</h3>
-        <p id="confirmText" style="font-size:14px; text-align:left;"></p>
-        <div style="display:flex; gap:10px; margin-top:20px;">
+        <p id="confirmText" style="font-size:18px; text-align:center;"></p>
+        <div style="display:flex; gap:12px; margin-top:20px;">
           <button id="confirmYes" style="background:var(--success); color:white;">Conferma</button>
           <button id="confirmNo" class="secondary">Annulla</button>
         </div>
@@ -100,6 +100,7 @@
 <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
