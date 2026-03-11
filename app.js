@@ -27,20 +27,20 @@ document.getElementById("check").onclick = async () => {
   resetUI();
 
   if (!date || !start || !end) {
-    alert("Per favore, inserisci data e orari completi.");
+    alert("Dati incompleti! Assicurati di aver inserito data e orario.");
     return;
   }
 
   if (start >= end) {
     document.querySelector("label[for='start']").classList.add("label-error");
     document.querySelector("label[for='end']").classList.add("label-error");
-    alert("L'orario di fine deve essere dopo quello di inizio.");
+    alert("L'orario di inizio deve precedere quello di fine.");
     return;
   }
 
   const status = document.getElementById("status");
   status.style.display = "block";
-  document.getElementById("msg").textContent = "Verifica disponibilità...";
+  document.getElementById("msg").textContent = "Controllo orari...";
 
   try {
     const res = await fetch(`${API}?action=check&date=${date}&start=${start}&end=${end}&espositore=${espositore}`);
@@ -48,13 +48,13 @@ document.getElementById("check").onclick = async () => {
     status.style.display = "none";
 
     if (data.ok) {
-      alert(`✅ Espositore ${espositore} è LIBERO!`);
+      alert(`✅ L'Espositore ${espositore} è disponibile!`);
       document.getElementById("send").disabled = false;
     } else {
       const panel = document.getElementById("detailsPanel");
       panel.style.display = "block";
       const conflitti = (data.with || []).map(c => `<li><strong>${c.name}</strong> (${c.start}-${c.end})</li>`).join("");
-      panel.innerHTML = `<strong>Occupato su Espositore ${espositore}:</strong><ul>${conflitti}</ul>`;
+      panel.innerHTML = `<strong>Attenzione!</strong> Su Espositore ${espositore} c'è già una prenotazione:<ul>${conflitti}</ul>`;
       
       if (data.suggestions && data.suggestions.length > 0) {
         document.getElementById("suggestions").style.display = "block";
@@ -65,7 +65,7 @@ document.getElementById("check").onclick = async () => {
     }
   } catch (e) {
     status.style.display = "none";
-    alert("Errore tecnico. Controlla la connessione.");
+    alert("Errore durante la verifica della disponibilità.");
   }
 };
 
@@ -77,10 +77,7 @@ function applySuggest(s, e) {
 
 document.getElementById("send").onclick = () => {
   const name = document.getElementById("name").value.trim();
-  if (name.length < 3) {
-    alert("Inserisci il tuo nome completo.");
-    return;
-  }
+  if (name.length < 3) return alert("Inserisci un nome valido.");
 
   const payload = {
     action: "submit",
@@ -93,10 +90,10 @@ document.getElementById("send").onclick = () => {
   };
 
   document.getElementById("confirmText").innerHTML = `
-    <strong>Espositore ${payload.espositore}</strong><br>
-    Data: ${payload.date.split("-").reverse().join("/")}<br>
-    Orario: ${payload.start} - ${payload.end}<br>
-    Luogo: Postazione ${payload.postazione}
+    <strong>Prenotazione Espositore ${payload.espositore}</strong><br><br>
+    📅 Data: ${payload.date.split("-").reverse().join("/")}<br>
+    🕒 Orario: ${payload.start} - ${payload.end}<br>
+    📍 Postazione: ${payload.postazione}
   `;
   document.getElementById("confirmModal").style.display = "flex";
   window.currentPayload = payload;
@@ -112,11 +109,11 @@ document.getElementById("confirmYes").onclick = async () => {
     const res = await fetch(API, { method: "POST", body: JSON.stringify(window.currentPayload) });
     const result = await res.json();
     if (result.success) {
-      alert("Prenotazione inviata con successo!");
+      alert("Prenotazione confermata!");
       window.location.reload();
     }
   } catch (e) {
-    alert("Errore durante l'invio.");
+    alert("Impossibile salvare la prenotazione.");
   } finally {
     document.getElementById("loadingOverlay").style.display = "none";
   }
@@ -124,27 +121,26 @@ document.getElementById("confirmYes").onclick = async () => {
 
 async function caricaRiepilogo() {
   const container = document.getElementById("riepilogo");
-  container.innerHTML = "<p style='text-align:center; font-size:13px; opacity:0.6;'>Aggiornamento...</p>";
+  container.innerHTML = "<p style='text-align:center; padding: 20px; opacity: 0.5;'>Sincronizzazione in corso...</p>";
   try {
     const res = await fetch(API + "?action=list");
     const bookings = await res.json();
     
-    // Ordina per data e poi per inizio
     bookings.sort((a,b) => a.date.localeCompare(b.date) || a.start.localeCompare(b.start));
 
     container.innerHTML = bookings.map(b => `
       <div class="booking-card">
         <span class="badge ${b.espositore === 'B' ? 'badge-b' : ''}">Espositore ${b.espositore || 'A'}</span>
-        <div style="font-weight:700; margin-bottom:4px;">${b.name}</div>
-        <div style="font-size:13px; color:var(--text-secondary);">
+        <div style="font-weight:700; font-size: 17px; margin-bottom:6px;">${b.name}</div>
+        <div style="font-size:14px; color:var(--text-secondary); line-height: 1.4;">
           📍 Postazione ${b.postazione}<br>
           📅 ${b.date.split("-").reverse().join("/")} | 🕒 ${b.start} - ${b.end}
         </div>
       </div>
     `).join("");
-    if (bookings.length === 0) container.innerHTML = "<p style='text-align:center; opacity:0.5;'>Nessuna prenotazione.</p>";
+    if (bookings.length === 0) container.innerHTML = "<p style='text-align:center; padding:20px; opacity:0.5;'>Nessun evento in programma.</p>";
   } catch (e) {
-    container.innerHTML = "<p style='color:red; text-align:center;'>Errore caricamento lista.</p>";
+    container.innerHTML = "<p style='color:var(--error); text-align:center; padding:20px;'>Errore nel caricamento del riepilogo.</p>";
   }
 }
 
@@ -160,9 +156,9 @@ window.onload = () => {
 
   const mapList = document.getElementById("postazioniList");
   mapList.innerHTML = POSTAZIONI.map(p => `
-    <div style="padding:15px 0; border-bottom:1px solid var(--ios-border);">
-      <div style="font-weight:bold; margin-bottom:5px;">${p.nome}</div>
-      <a href="https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lon}" target="_blank" style="color:var(--primary); text-decoration:none; font-size:14px;">📍 Visualizza su Google Maps</a>
+    <div style="padding:18px 0; border-bottom:1px solid var(--ios-border);">
+      <div style="font-weight:700; margin-bottom:6px;">${p.nome}</div>
+      <a href="https://www.google.com/maps?q=${p.lat},${p.lon}" target="_blank" style="color:var(--primary); text-decoration:none; font-size:14px; font-weight:600;">📍 Vedi posizione</a>
     </div>
   `).join("");
 };
