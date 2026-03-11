@@ -28,22 +28,18 @@
 
       <div class="field time-row">
         <div class="time-col">
-          <label class="field-label" for="start">Inizio ⏱️</label>
-          <div class="time-inner">
-            <input class="field-input" type="time" id="start">
-          </div>
+          <label class="field-label" for="start">Inizio</label>
+          <input class="field-input" type="time" id="start">
         </div>
         <div class="time-col">
-          <label class="field-label" for="end">Fine ⏱️</label>
-          <div class="time-inner">
-            <input class="field-input" type="time" id="end">
-          </div>
+          <label class="field-label" for="end">Fine</label>
+          <input class="field-input" type="time" id="end">
         </div>
       </div>
 
       <div class="field">
         <label class="field-label" for="name">Il tuo Nome</label>
-        <input class="field-input" type="text" id="name" placeholder="Inserisci nome e cognome" minlength="3">
+        <input class="field-input" type="text" id="name" placeholder="Inserisci nome e cognome">
       </div>
 
       <div class="field">
@@ -60,7 +56,7 @@
         </select>
       </div>
 
-      <button id="openPostazioni" class="postazioni-inline-btn">📍 Dove sono le postazioni?</button>
+      <button id="openPostazioni" class="postazioni-inline-btn">📍 Mappa Postazioni</button>
     </div>
 
     <div id="formContainer">
@@ -69,13 +65,16 @@
       <button id="send" disabled>Invia la prenotazione</button>
     </div>
 
-    <h3 class="title" style="margin: 25px 0 10px 15px;">Riepilogo prenotazioni</h3>
+    <h3 class="title" style="margin: 20px 15px 10px;">Riepilogo prenotazioni</h3>
+    <div class="update-wrap" style="text-align:right; padding-right:15px;">
+        <button class="secondary" style="width:auto; padding:5px 15px; font-size:12px;" onclick="caricaRiepilogo()">🔄 Aggiorna</button>
+    </div>
     <div id="riepilogo"></div>
 
     <div id="confirmModal">
       <div id="confirmBox">
-        <h3>Confermi?</h3>
-        <p id="confirmText"></p>
+        <h3>Confermi i dati?</h3>
+        <p id="confirmText" style="font-size:14px; text-align:left;"></p>
         <div style="display:flex; gap:10px; margin-top:20px;">
           <button id="confirmYes" style="background:var(--success); color:white;">Conferma</button>
           <button id="confirmNo" class="secondary">Annulla</button>
@@ -85,13 +84,13 @@
 
     <div id="loadingOverlay">
         <div class="spinner"></div>
-        <span>Invio in corso...</span>
+        <span>Salvataggio in corso...</span>
     </div>
 
     <div id="postazioniMenu">
       <div id="postazioniHeader" style="display:flex; justify-content:space-between; align-items:center;">
-        <strong>Mappa Postazioni</strong>
-        <button id="closePostazioni" class="secondary" style="width:auto; padding:5px 15px;">Chiudi</button>
+        <strong>Posizioni GPS</strong>
+        <button id="closePostazioni" class="secondary" style="width:auto; padding:5px 10px;">Chiudi</button>
       </div>
       <div id="postazioniList"></div>
     </div>
@@ -101,5 +100,6 @@
 <script src="app.js"></script>
 </body>
 </html>
+
 
 
