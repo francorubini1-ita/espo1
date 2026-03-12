@@ -43,7 +43,7 @@
       </div>
 
       <div class="field">
-        <label class="field-label" for="postazione">Postazione (Luogo)</label>
+        <label class="field-label" for="postazione">Postazione</label>
         <select class="field-input" id="postazione">
           <option value="1">Postazione 1</option>
           <option value="2">Postazione 2</option>
@@ -56,26 +56,26 @@
         </select>
       </div>
 
-      <button id="openPostazioni" class="postazioni-inline-btn">📍 Mappa delle Postazioni</button>
+      <button id="openPostazioni" class="postazioni-inline-btn">📍 Mappa Postazioni</button>
     </div>
 
     <div id="formContainer">
       <div id="detailsPanel"></div>
-      <button id="check">Controlla la disponibilità...</button>
-      <button id="send" disabled>Invia la prenotazione</button>
+      <button id="check">Controlla disponibilità</button>
+      <button id="send" disabled>Invia prenotazione</button>
     </div>
 
-    <h3 class="title" style="margin: 20px 15px 10px;">Riepilogo prenotazioni</h3>
-    <div class="update-wrap" style="text-align:center; padding-right:15px;">
-        <button class="secondary" style="width:auto; padding:5px 15px; font-size:12px;" onclick="caricaRiepilogo()">🔄 Aggiorna</button>
+    <h3 class="title" style="margin: 30px 15px 15px; font-size: 24px;">Riepilogo prenotazioni</h3>
+    <div class="update-wrap" style="text-align:right; padding-right:15px; margin-bottom: 10px;">
+        <button class="secondary" style="width:auto; padding:8px 20px; font-size:18px;" onclick="caricaRiepilogo()">🔄 Aggiorna</button>
     </div>
     <div id="riepilogo"></div>
 
     <div id="confirmModal">
       <div id="confirmBox">
         <h3>Confermi i dati?</h3>
-        <p id="confirmText" style="font-size:18px; text-align:center;"></p>
-        <div style="display:flex; gap:12px; margin-top:20px;">
+        <p id="confirmText"></p>
+        <div style="display:flex; gap:15px; margin-top:25px;">
           <button id="confirmYes" style="background:var(--success); color:white;">Conferma</button>
           <button id="confirmNo" class="secondary">Annulla</button>
         </div>
@@ -88,9 +88,9 @@
     </div>
 
     <div id="postazioniMenu">
-      <div id="postazioniHeader" style="display:flex; justify-content:space-between; align-items:center;">
+      <div id="postazioniHeader">
         <strong>Posizioni GPS</strong>
-        <button id="closePostazioni" class="secondary" style="width:auto; padding:5px 10px;">Chiudi</button>
+        <button id="closePostazioni" class="secondary" style="width:auto; padding:10px 15px;">Chiudi</button>
       </div>
       <div id="postazioniList"></div>
     </div>
@@ -100,6 +100,7 @@
 <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
