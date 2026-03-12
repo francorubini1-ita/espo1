@@ -11,8 +11,9 @@
   --ios-border: #d1d1d6;
   --radius: 16px;
   
-  --espositore-a: #0047FF; 
-  --espositore-b: #FF9500; 
+  /* Colori Vivaci Badge */
+  --espositore-a: #0047FF; /* Blu elettrico intenso */
+  --espositore-b: #FF9500; /* Arancione fluo Apple */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -44,6 +45,9 @@ body {
   z-index: 100;
 }
 
+/* ============================================================
+   SCHEDE E INPUT (Font Ingranditi)
+   ============================================================ */
 .card {
   background: var(--card-bg);
   margin: 15px;
@@ -73,6 +77,9 @@ label[for="start"]::before, label[for="end"]::before {
 .time-row { display: flex; gap: 15px; }
 .time-col { flex: 1; }
 
+/* ============================================================
+   BOTTONI
+   ============================================================ */
 button {
   width: 100%;
   padding: 22px;
@@ -94,7 +101,7 @@ button {
 }
 
 /* ============================================================
-   BADGE ESPOSITORI (Lettera Sotto)
+   BADGE ESPOSITORI (Ridotti con Lettera Sotto)
    ============================================================ */
 .date-group-header {
   margin: 30px 15px 10px;
@@ -118,34 +125,40 @@ button {
 
 .badge {
   flex-shrink: 0; 
-  font-size: 14px; /* Ridotta dimensione testo base */
+  font-size: 14px; 
   padding: 6px 10px;
   border-radius: 8px;
   font-weight: 900;
   color: white; 
-  min-width: 50px; /* Ridotta larghezza */
+  min-width: 50px; 
   text-align: center;
   line-height: 1.1;
 }
 
 .badge span {
-  display: block; /* Manda la lettera a capo */
-  font-size: 20px; /* Lettera più grande per leggibilità */
+  display: block; 
+  font-size: 20px; 
 }
 
 .badge-a { background-color: var(--espositore-a); box-shadow: 0 2px 8px rgba(0,71,255,0.4); }
 .badge-b { background-color: var(--espositore-b); box-shadow: 0 2px 8px rgba(255,149,0,0.4); }
 
 /* ============================================================
-   OVERLAY SEMITRASPARENTI (Effetto Blur)
+   OVERLAY SEMITRASPARENTI (Effetto Blur Glassmorphism)
    ============================================================ */
 .glass-overlay {
-  position: fixed; inset: 0; 
+  position: fixed; 
+  inset: 0; 
   background: rgba(255, 255, 255, 0.3); 
   backdrop-filter: blur(15px); 
   -webkit-backdrop-filter: blur(15px);
-  display: none; align-items: center; justify-content: center; 
-  z-index: 5000; color: var(--primary); flex-direction: column; font-size: 26px;
+  display: none; 
+  align-items: center; 
+  justify-content: center; 
+  z-index: 5000; 
+  color: var(--primary); 
+  flex-direction: column; 
+  font-size: 26px;
   font-weight: 800;
 }
 
@@ -175,7 +188,19 @@ button {
 }
 #confirmBox h3 { font-size: 28px; margin-top: 0; }
 
-.spinner { border: 4px solid rgba(0,0,0,0.1); border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+/* ============================================================
+   ANIMAZIONI E FEEDBACK
+   ============================================================ */
+.spinner { 
+  border: 4px solid rgba(0,0,0,0.1); 
+  border-top: 4px solid var(--primary); 
+  border-radius: 50%; 
+  width: 40px; 
+  height: 40px; 
+  animation: spin 1s linear infinite; 
+  margin-bottom: 15px; 
+}
+
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .label-error { color: var(--error) !important; animation: shake 0.4s; }
