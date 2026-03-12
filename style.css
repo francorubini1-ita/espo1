@@ -1,16 +1,19 @@
 /* ============================================================
-   VARIABILI E TEMA (iOS Design)
+   VARIABILI E COLORI VIVACI
    ============================================================ */
 :root {
   --primary: #007aff;
-  --success: #34c759;
+  --success: #28cd41;
   --error: #ff3b30;
   --bg: #f2f2f7;
   --card-bg: #ffffff;
   --text: #1c1c1e;
-  --text-secondary: #8e8e93;
   --ios-border: #d1d1d6;
-  --radius: 14px;
+  --radius: 16px;
+  
+  /* Colori Vivaci Badge */
+  --espositore-a: #0047FF; /* Blu elettrico intenso */
+  --espositore-b: #FF9500; /* Arancione fluo Apple */
 }
 
 @media (prefers-color-scheme: dark) {
@@ -24,17 +27,19 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: -apple-system, sans-serif;
   background-color: var(--bg);
   color: var(--text);
-  overflow-x: hidden;
+  /* Ingrandimento generale font (base 16px * 1.5 = 24px per il corpo) */
+  font-size: 20px; 
 }
 
 .app-header {
   background: var(--primary);
   color: white;
-  padding: 18px;
+  padding: 25px;
   font-weight: 800;
+  font-size: 30px; /* 1.5x rispetto a 20px */
   text-align: center;
   position: sticky;
   top: 0;
@@ -42,67 +47,66 @@ body {
 }
 
 /* ============================================================
-   SCHEDE E CAMPI INPUT
+   SCHEDE E INPUT (Font Ingranditi)
    ============================================================ */
 .card {
   background: var(--card-bg);
   margin: 15px;
-  padding: 20px;
+  padding: 25px;
   border-radius: var(--radius);
-  border: 2px solid var(--ios-border);
+  border: 1px solid var(--ios-border);
 }
 
-.field { margin-bottom: 15px; }
-.field-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+.field { margin-bottom: 22px; }
+.field-label { display: block; font-size: 21px; font-weight: 700; margin-bottom: 8px; }
 
-/* Icona Cronometro ⏱️ */
 label[for="start"]::before, label[for="end"]::before {
   content: "⏱️ ";
 }
 
 .field-input {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 2px solid var(--ios-border);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--ios-border);
   background: var(--bg);
   color: var(--text);
-  font-size: 16px;
+  font-size: 22px; /* Input molto leggibili */
   box-sizing: border-box;
 }
 
-.time-row { display: flex; gap: 10px; }
+.time-row { display: flex; gap: 15px; }
 .time-col { flex: 1; }
 
 /* ============================================================
-   BOTTONI E AZIONI
+   BOTTONI
    ============================================================ */
 button {
   width: 100%;
-  padding: 16px;
+  padding: 22px;
   border-radius: var(--radius);
   border: none;
-  font-weight: 700;
-  font-size: 16px;
+  font-weight: 800;
+  font-size: 24px; /* Bottoni grandi */
   cursor: pointer;
 }
 
-#check { background: var(--primary); color: white; margin: 0 15px; width: calc(100% - 30px); }
+#check { background: var(--primary); color: white; margin: 10px 15px; width: calc(100% - 30px); }
 #send { background: var(--success); color: white; margin: 15px; width: calc(100% - 30px); }
-#send:disabled { opacity: 0.3; pointer-events: none; }
+#send:disabled { opacity: 0.3; }
 
 .secondary { background: var(--ios-border); color: var(--text); }
 
 .postazioni-inline-btn {
-  background: transparent; color: var(--primary); font-size: 14px; text-decoration: underline; padding: 10px 0; text-align: left;
+  background: transparent; color: var(--primary); font-size: 20px; text-decoration: underline; padding: 15px 0; text-align: left;
 }
 
 /* ============================================================
-   RIEPILOGO RAGGRUPPATO
+   BADGE ESPOSITORI (Grandi e Vivaci)
    ============================================================ */
 .date-group-header {
-  margin: 20px 15px 5px;
-  font-size: 15px;
+  margin: 30px 15px 10px;
+  font-size: 19px;
   font-weight: 800;
   color: var(--primary);
   text-transform: uppercase;
@@ -110,25 +114,27 @@ button {
 
 .booking-card {
   background: var(--card-bg);
-  padding: 15px;
-  margin: 0 15px 10px;
-  border-radius: 12px;
+  padding: 20px;
+  margin: 0 15px 15px;
+  border-radius: 14px;
   border: 1px solid var(--ios-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* Badge per differenziare Espositore A e B */
 .badge {
-  font-size: 10px;
-  padding: 4px 10px;
-  border-radius: 6px;
+  font-size: 18px; /* Ingrandito */
+  padding: 6px 14px;
+  border-radius: 8px;
   font-weight: 900;
-  background: #e5e5ea;
-  color: var(--primary);
+  color: white; /* Testo bianco per contrasto con colori vivaci */
+  min-width: 80px;
+  text-align: center;
 }
-.badge-b { background: #fff9c4; color: #f57f17; }
+
+.badge-a { background-color: var(--espositore-a); box-shadow: 0 2px 8px rgba(0,71,255,0.4); }
+.badge-b { background-color: var(--espositore-b); box-shadow: 0 2px 8px rgba(255,149,0,0.4); }
 
 /* ============================================================
    OVERLAY E TENDINA
@@ -136,31 +142,22 @@ button {
 #postazioniMenu {
   position: fixed; top: 0; right: -100%; width: 85%; height: 100%;
   background: var(--card-bg); transition: 0.4s; z-index: 2000;
-  padding: 20px; box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+  padding: 30px; box-shadow: -5px 0 20px rgba(0,0,0,0.3);
+  font-size: 22px;
 }
 #postazioniMenu.show { right: 0; }
 
+#postazioniHeader { font-size: 26px; margin-bottom: 25px; border-bottom: 2px solid var(--ios-border); padding-bottom: 15px; }
+
 #loadingOverlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
-  display: none; align-items: center; justify-content: center; z-index: 3000; color: white; flex-direction: column;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+  display: none; align-items: center; justify-content: center; z-index: 5000; color: white; flex-direction: column; font-size: 24px;
 }
 
-.spinner {
-  border: 3px solid rgba(255,255,255,0.3);
-  border-top: 3px solid white;
-  border-radius: 50%;
-  width: 30px; height: 30px;
-  animation: spin 1s linear infinite; margin-bottom: 10px;
-}
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-#confirmModal {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-  display: none; align-items: center; justify-content: center; z-index: 4000;
-}
-#confirmBox { background: var(--card-bg); padding: 25px; border-radius: 20px; width: 85%; max-width: 350px; }
+#confirmBox { background: var(--card-bg); padding: 35px; border-radius: 25px; width: 85%; max-width: 450px; font-size: 22px; }
+#confirmBox h3 { font-size: 28px; margin-top: 0; }
 
 .label-error { color: var(--error) !important; animation: shake 0.4s; }
-@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 
 
