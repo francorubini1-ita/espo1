@@ -1,6 +1,3 @@
-/* =====================================================
-   CONFIGURAZIONE
-   ===================================================== */
 const API = "https://script.google.com/macros/s/AKfycbw1PkamNFSLC_VTRaNZh8FVkYmqgGx2rTkWykn4bM5eMJeODC4bHMNo73UmoZyRpx5n/exec";
 
 const POSTAZIONI = [
@@ -14,9 +11,6 @@ const POSTAZIONI = [
   { id: 8, nome: "Postazione 8", lat: 44.550000, lon: 11.350000 }
 ];
 
-/* =====================================================
-   VALIDAZIONI E CONTROLLI
-   ===================================================== */
 document.getElementById("check").onclick = async () => {
   const espositore = document.getElementById("espositore").value;
   const dateVal = document.getElementById("date").value;
@@ -27,12 +21,22 @@ document.getElementById("check").onclick = async () => {
 
   if (!dateVal || !start || !end) return alert("Inserisci tutti i dati temporali.");
 
-  const oggi = new Date().setHours(0,0,0,0);
-  const scelta = new Date(dateVal).setHours(0,0,0,0);
-  
-  if (scelta < oggi) {
+  const oraAttuale = new Date();
+  const dataScelta = new Date(dateVal);
+  dataScelta.setHours(0,0,0,0);
+  const oggiStr = oraAttuale.toISOString().split("T")[0];
+  const oraCorrenteStr = oraAttuale.getHours().toString().padStart(2, '0') + ":" + oraAttuale.getMinutes().toString().padStart(2, '0');
+
+  // Controllo Data Passata
+  if (dataScelta < new Date().setHours(0,0,0,0)) {
     document.querySelector("label[for='date']").classList.add("label-error");
     return alert("Non puoi prenotare una data nel passato.");
+  }
+
+  // Controllo Orario Passato (se oggi)
+  if (dateVal === oggiStr && start < oraCorrenteStr) {
+    document.querySelector("label[for='start']").classList.add("label-error");
+    return alert(`L'orario di inizio (${start}) è già passato. Adesso sono le ${oraCorrenteStr}.`);
   }
 
   if (start >= end) {
@@ -47,7 +51,6 @@ document.getElementById("check").onclick = async () => {
   try {
     const res = await fetch(`${API}?action=check&date=${dateVal}&start=${start}&end=${end}&espositore=${espositore}`);
     const data = await res.json();
-    
     checkingOverlay.style.display = "none";
 
     if (data.ok) {
@@ -63,9 +66,6 @@ document.getElementById("check").onclick = async () => {
   }
 };
 
-/* =====================================================
-   LOGICA DI INVIO
-   ===================================================== */
 document.getElementById("send").onclick = () => {
   const payload = {
     action: "submit",
@@ -107,9 +107,6 @@ document.getElementById("confirmYes").onclick = async () => {
 
 document.getElementById("confirmNo").onclick = () => document.getElementById("confirmModal").style.display = "none";
 
-/* =====================================================
-   RIEPILOGO RAGGRUPPATO (Badge con lettera sotto)
-   ===================================================== */
 async function caricaRiepilogo() {
   const container = document.getElementById("riepilogo");
   container.innerHTML = "<p style='text-align:center; padding:30px;'>🔄 Sincronizzazione in corso...</p>";
@@ -117,7 +114,6 @@ async function caricaRiepilogo() {
   try {
     const res = await fetch(API + "?action=list");
     const bookings = await res.json();
-
     const gruppi = {};
     bookings.forEach(b => {
       if (!gruppi[b.date]) gruppi[b.date] = [];
@@ -128,7 +124,6 @@ async function caricaRiepilogo() {
     Object.keys(gruppi).sort().forEach(data => {
       const dFormattata = data.split("-").reverse().join("/");
       html += `<div class="date-group-header">${dFormattata}</div>`;
-      
       gruppi[data].sort((a,b) => a.start.localeCompare(b.start)).forEach(b => {
         const badgeClass = b.espositore === 'B' ? 'badge-b' : 'badge-a';
         html += `
@@ -145,9 +140,6 @@ async function caricaRiepilogo() {
   } catch (e) { container.innerHTML = "Errore durante il caricamento dei dati."; }
 }
 
-/* =====================================================
-   INIZIALIZZAZIONE
-   ===================================================== */
 window.onload = () => {
   const oggi = new Date().toISOString().split("T")[0];
   const dateIn = document.getElementById("date");
