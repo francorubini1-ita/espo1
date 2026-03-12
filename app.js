@@ -6,7 +6,7 @@ const API = "https://script.google.com/macros/s/AKfycbw1PkamNFSLC_VTRaNZh8FVkYmq
 const POSTAZIONI = [
   { id: 1, nome: "Postazione 1", lat: 44.574728, lon: 11.363502 },
   { id: 2, nome: "Postazione 2", lat: 44.577320, lon: 11.361661 },
-  { id: 3, nome: "Postazione 3", lat: 44.577225, lon: 11.358206 },
+  { id: 3, nome: "Postazione 2bis", lat: 44.577225, lon: 11.358206 },
   { id: 4, nome: "Postazione 4", lat: 44.558822, lon: 11.355390 },
   { id: 5, nome: "Postazione 5", lat: 44.550000, lon: 11.350000 },
   { id: 6, nome: "Postazione 6", lat: 44.550000, lon: 11.350000 },
@@ -41,7 +41,6 @@ document.getElementById("check").onclick = async () => {
     return alert("L'orario di fine deve essere dopo l'inizio.");
   }
 
-  // Attiva overlay semitrasparente di verifica
   const checkingOverlay = document.getElementById("checkingOverlay");
   checkingOverlay.style.display = "flex";
 
@@ -109,7 +108,7 @@ document.getElementById("confirmYes").onclick = async () => {
 document.getElementById("confirmNo").onclick = () => document.getElementById("confirmModal").style.display = "none";
 
 /* =====================================================
-   RIEPILOGO RAGGRUPPATO (Rendering dei nuovi badge)
+   RIEPILOGO RAGGRUPPATO (Badge con lettera sotto)
    ===================================================== */
 async function caricaRiepilogo() {
   const container = document.getElementById("riepilogo");
@@ -138,7 +137,7 @@ async function caricaRiepilogo() {
               <strong style="font-size:24px; display:block; margin-bottom:4px;">${b.name}</strong>
               <span style="font-size:19px; opacity:0.8; white-space: nowrap;">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
             </div>
-            <span class="badge ${badgeClass}">Esp. ${b.espositore || 'A'}</span>
+            <div class="badge ${badgeClass}">Esp.<span>${b.espositore || 'A'}</span></div>
           </div>`;
       });
     });
