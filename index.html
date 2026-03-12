@@ -55,26 +55,21 @@
           <option value="8">Postazione 8</option>
         </select>
       </div>
+
       <button id="openPostazioni" class="postazioni-inline-btn">📍 Mappa Postazioni</button>
     </div>
 
     <div id="formContainer">
+      <div id="detailsPanel"></div>
       <button id="check">Controlla disponibilità</button>
       <button id="send" disabled>Invia prenotazione</button>
     </div>
 
-    <h3 class="title" style="margin: 35px 15px 10px; font-size: 26px;">Riepilogo prenotazioni</h3>
+    <h3 class="title" style="margin: 30px 15px 15px; font-size: 24px;">Riepilogo prenotazioni</h3>
+    <div class="update-wrap" style="text-align:right; padding-right:15px; margin-bottom: 10px;">
+        <button class="secondary" style="width:auto; padding:8px 20px; font-size:18px;" onclick="caricaRiepilogo()">🔄 Aggiorna</button>
+    </div>
     <div id="riepilogo"></div>
-
-    <div id="loadingOverlay" class="glass-pane">
-        <div class="spinner"></div>
-        <span>Salvataggio in corso...</span>
-    </div>
-
-    <div id="checkingOverlay" class="glass-pane">
-        <div class="spinner"></div>
-        <span>Verifica disponibilità...</span>
-    </div>
 
     <div id="confirmModal">
       <div id="confirmBox">
@@ -87,10 +82,20 @@
       </div>
     </div>
 
+    <div id="loadingOverlay" class="glass-overlay">
+        <div class="spinner"></div>
+        <span>Salvataggio in corso...</span>
+    </div>
+
+    <div id="checkingOverlay" class="glass-overlay">
+        <div class="spinner"></div>
+        <span>Verifica in corso...</span>
+    </div>
+
     <div id="postazioniMenu">
       <div id="postazioniHeader">
-        <strong>Mappe GPS</strong>
-        <button id="closePostazioni" class="secondary" style="width:auto;">Chiudi</button>
+        <strong>Posizioni GPS</strong>
+        <button id="closePostazioni" class="secondary" style="width:auto; padding:10px 15px;">Chiudi</button>
       </div>
       <div id="postazioniList"></div>
     </div>
@@ -100,6 +105,9 @@
 <script src="app.js"></script>
 </body>
 </html>
+
+
+
 
 
 
