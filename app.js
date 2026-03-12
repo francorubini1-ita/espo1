@@ -41,9 +41,15 @@ document.getElementById("check").onclick = async () => {
     return alert("L'orario di fine deve essere dopo l'inizio.");
   }
 
+  // Attiva overlay semitrasparente di verifica
+  const checkingOverlay = document.getElementById("checkingOverlay");
+  checkingOverlay.style.display = "flex";
+
   try {
     const res = await fetch(`${API}?action=check&date=${dateVal}&start=${start}&end=${end}&espositore=${espositore}`);
     const data = await res.json();
+    
+    checkingOverlay.style.display = "none";
 
     if (data.ok) {
       alert(`✅ Espositore ${espositore} LIBERO!`);
@@ -52,7 +58,10 @@ document.getElementById("check").onclick = async () => {
       alert(`❌ Occupato su Espositore ${espositore} da: ${data.with[0].name}`);
       document.getElementById("send").disabled = true;
     }
-  } catch (e) { alert("Errore server."); }
+  } catch (e) { 
+    checkingOverlay.style.display = "none";
+    alert("Errore server."); 
+  }
 };
 
 /* =====================================================
@@ -72,7 +81,7 @@ document.getElementById("send").onclick = () => {
   if (payload.name.length < 3) return alert("Inserisci il tuo nome.");
 
   document.getElementById("confirmText").innerHTML = `
-    <div style="line-height:1.6; font-size:20px;">
+    <div style="line-height:1.6; font-size:22px;">
       <b>Espositore:</b> ${payload.espositore}<br>
       <b>Data:</b> ${payload.date.split("-").reverse().join("/")}<br>
       <b>Orario:</b> ${payload.start} - ${payload.end}<br>
@@ -122,13 +131,12 @@ async function caricaRiepilogo() {
       html += `<div class="date-group-header">${dFormattata}</div>`;
       
       gruppi[data].sort((a,b) => a.start.localeCompare(b.start)).forEach(b => {
-        // Assegnazione classe badge vivace
         const badgeClass = b.espositore === 'B' ? 'badge-b' : 'badge-a';
         html += `
           <div class="booking-card">
-            <div>
-              <strong style="font-size:22px;">${b.name}</strong><br>
-              <span style="font-size:18px; opacity:0.8;">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
+            <div style="flex: 1; min-width: 0;">
+              <strong style="font-size:24px; display:block; margin-bottom:4px;">${b.name}</strong>
+              <span style="font-size:19px; opacity:0.8; white-space: nowrap;">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
             </div>
             <span class="badge ${badgeClass}">Esp. ${b.espositore || 'A'}</span>
           </div>`;
@@ -159,6 +167,7 @@ window.onload = () => {
 
   caricaRiepilogo();
 };
+
 
 
 
