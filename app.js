@@ -12,7 +12,7 @@ const POSTAZIONI = [
 ];
 
 function mapLink(lat, lon) {
-  return `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+  return `https://www.google.com/maps/@${lat},${lon},20z/data=!3m1!1e3`;
 }
 
 document.getElementById("check").onclick = async () => {
