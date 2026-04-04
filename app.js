@@ -11,6 +11,10 @@ const POSTAZIONI = [
   { id: 8, nome: "Postazione 8", lat: 44.550000, lon: 11.350000 }
 ];
 
+function mapLink(lat, lon) {
+  return `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+}
+
 document.getElementById("check").onclick = async () => {
   const espositore = document.getElementById("espositore").value;
   const dateVal = document.getElementById("date").value;
