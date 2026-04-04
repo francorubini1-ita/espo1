@@ -157,7 +157,7 @@ window.onload = () => {
   document.getElementById("postazioniList").innerHTML = POSTAZIONI.map(p => `
     <div style="padding:18px 0; border-bottom:1px solid var(--ios-border);">
       <strong style="font-size:22px;">${p.nome}</strong><br>
-      <a href="http://googleusercontent.com/maps.google.com/maps?q=${p.lat},${p.lon}&z=20&t=k" target="_blank" style="color:var(--primary); font-size:20px; text-decoration:none;">📍 Apri Mappa GPS</a>
+      <a href="${mapLink(p.lat, p.lon)}" target="_blank" style="color:var(--primary); font-size:20px; text-decoration:none;">📍 Apri Mappa GPS</a>
     </div>
   `).join("");
 
