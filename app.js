@@ -1,4 +1,4 @@
-const API = "https://script.google.com/macros/s/AKfycbw1PkamNFSLC_VTRaNZh8FVkYmqgGx2rTkWykn4bM5eMJeODC4bHMNo73UmoZyRpx5n/exec";
+const API = "https://script.google.com/macros/s/AKfycbzHmkvVWE12RA3MFycv4Cak9SghvkGYJzImfICdG4nLSKby47SIwnZgzXpR3cnRZrTh/exec";
 
 const POSTAZIONI = [
   { id: 1, nome: "Postazione 1", lat: 44.877242, lon: 11.858320 },  
