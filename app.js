@@ -4,11 +4,11 @@ const POSTAZIONI = [
   { id: 1, nome: "Postazione 1", lat: 44.574728, lon: 11.363502 },
   { id: 2, nome: "Postazione 2", lat: 44.577320, lon: 11.361661 },
   { id: 3, nome: "Postazione 3", lat: 44.577225, lon: 11.358206 },
-  { id: 4, nome: "Postazione 4", lat: 44.558822, lon: 11.355390 },
-  { id: 5, nome: "Postazione 5", lat: 44.558823, lon: 11.355389 },
-  { id: 6, nome: "Postazione 6", lat: 44.558824, lon: 11.355388 },
-  { id: 7, nome: "Postazione 7", lat: 44.558825, lon: 11.355387 },
-  { id: 8, nome: "Postazione 8", lat: 44.558826, lon: 11.355386 }
+  { id: 4, nome: "Postazione 4", lat: 44.588822, lon: 11.355390 },
+  { id: 5, nome: "Postazione 5", lat: 44.558833, lon: 11.355389 },
+  { id: 6, nome: "Postazione 6", lat: 44.598844, lon: 11.355388 },
+  { id: 7, nome: "Postazione 7", lat: 44.508855, lon: 11.355387 },
+  { id: 8, nome: "Postazione 8", lat: 44.548866, lon: 11.355386 }
 ];
 
 function mapLink(lat, lon) {
