@@ -171,6 +171,9 @@ button {
   background: var(--card-bg); transition: 0.4s; z-index: 2000;
   padding: 30px; box-shadow: -5px 0 20px rgba(0,0,0,0.3);
   font-size: 22px;
+  overflow-y: auto; 
+  box-sizing: border-box;
+  padding-bottom: 80px;
 }
 #postazioniMenu.show { right: 0; }
 
