@@ -72,8 +72,14 @@ document.getElementById("check").onclick = async () => {
 };
 
 document.getElementById("send").onclick = () => {
+  // --- INIZIO CODICE TELEGRAM ---
+  const urlParams = new URLSearchParams(window.location.search);
+  const telegramId = urlParams.get('user');
+  // --- FINE CODICE TELEGRAM ---
+
   const payload = {
     action: "submit",
+    telegramId: telegramId, // Inserito nel payload
     espositore: document.getElementById("espositore").value,
     date: document.getElementById("date").value,
     start: document.getElementById("start").value,
@@ -163,8 +169,6 @@ window.onload = () => {
 
   caricaRiepilogo();
 };
-
-
 
 
 
