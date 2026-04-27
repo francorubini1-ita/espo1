@@ -12,9 +12,9 @@ const POSTAZIONI = [
 ];
 
 function mapLink(lat, lon) {
-  return `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+  // Corretto il link per Google Maps
+  return `https://www.google.com/maps?q=${lat},${lon}`;
 }
-
 
 document.getElementById("check").onclick = async () => {
   const espositore = document.getElementById("espositore").value;
@@ -32,13 +32,11 @@ document.getElementById("check").onclick = async () => {
   const oggiStr = oraAttuale.toISOString().split("T")[0];
   const oraCorrenteStr = oraAttuale.getHours().toString().padStart(2, '0') + ":" + oraAttuale.getMinutes().toString().padStart(2, '0');
 
-  // Controllo Data Passata
   if (dataScelta < new Date().setHours(0,0,0,0)) {
     document.querySelector("label[for='date']").classList.add("label-error");
     return alert("Non puoi prenotare una data nel passato.");
   }
 
-  // Controllo Orario Passato (se oggi)
   if (dateVal === oggiStr && start < oraCorrenteStr) {
     document.querySelector("label[for='start']").classList.add("label-error");
     return alert(`L'orario di inizio (${start}) è già passato. Adesso sono le ${oraCorrenteStr}.`);
@@ -72,14 +70,12 @@ document.getElementById("check").onclick = async () => {
 };
 
 document.getElementById("send").onclick = () => {
-  // --- INIZIO CODICE TELEGRAM ---
   const urlParams = new URLSearchParams(window.location.search);
   const telegramId = urlParams.get('user');
-  // --- FINE CODICE TELEGRAM ---
 
   const payload = {
     action: "submit",
-    telegramId: telegramId, // Inserito nel payload
+    telegramId: telegramId,
     espositore: document.getElementById("espositore").value,
     date: document.getElementById("date").value,
     start: document.getElementById("start").value,
@@ -126,29 +122,34 @@ async function caricaRiepilogo() {
     const res = await fetch(API + "?action=list");
     const bookings = await res.json();
     const gruppi = {};
+    
     bookings.forEach(b => {
-      if (!gruppi[b.date]) gruppi[b.date] = [];
-      gruppi[b.date].push(b);
+      // PULIZIA DATA: Prende solo YYYY-MM-DD se arriva come stringa ISO
+      const dataPulita = b.date.includes("T") ? b.date.split("T")[0] : b.date;
+      if (!gruppi[dataPulita]) gruppi[dataPulita] = [];
+      gruppi[dataPulita].push(b);
     });
 
     let html = "";
-    Object.keys(gruppi).sort().forEach(data => {
-      const dFormattata = data.split("T")[0].split("-").reverse().join("/");
+    // Ordina le date (dalla più recente)
+    Object.keys(gruppi).sort().forEach(dataKey => {
+      const dFormattata = dataKey.split("-").reverse().join("/");
       html += `<div class="date-group-header">${dFormattata}</div>`;
-      gruppi[data].sort((a,b) => a.start.localeCompare(b.start)).forEach(b => {
+      
+      gruppi[dataKey].sort((a,b) => a.start.localeCompare(b.start)).forEach(b => {
         const badgeClass = b.espositore === 'B' ? 'badge-b' : 'badge-a';
         html += `
           <div class="booking-card">
-            <div style="flex: 1; min-width: 0;">
+            <div>
               <strong style="font-size:24px; display:block; margin-bottom:4px;">${b.name}</strong>
-              <span style="font-size:19px; opacity:0.8; white-space: nowrap;">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
+              <span style="font-size:19px; opacity:0.8;">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
             </div>
             <div class="badge ${badgeClass}">Esp.<span>${b.espositore || 'A'}</span></div>
           </div>`;
       });
     });
     container.innerHTML = html || "<p style='text-align:center;'>Nessuna prenotazione trovata.</p>";
-  } catch (e) { container.innerHTML = "Errore durante il caricamento dei dati."; }
+  } catch (e) { container.innerHTML = "<p style='text-align:center;'>Errore durante il caricamento dei dati.</p>"; }
 }
 
 window.onload = () => {
@@ -169,6 +170,3 @@ window.onload = () => {
 
   caricaRiepilogo();
 };
-
-
-
