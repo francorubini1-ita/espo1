@@ -15,37 +15,63 @@ function mapLink(lat, lon) {
   return `https://www.google.com/maps?q=${lat},${lon}`;
 }
 
+// Funzione globale per il tasto Aggiorna
+async function caricaRiepilogo() {
+  const container = document.getElementById("riepilogo");
+  if (!container) return;
+  container.innerHTML = "<p style='text-align:center; padding:30px;'>🔄 Aggiornamento in corso...</p>";
+
+  try {
+    const res = await fetch(API + "?action=list");
+    const bookings = await res.json();
+    const gruppi = {};
+    
+    bookings.forEach(b => {
+      const dataPulita = b.date.substring(0, 10);
+      if (!gruppi[dataPulita]) gruppi[dataPulita] = [];
+      gruppi[dataPulita].push(b);
+    });
+
+    let html = "";
+    Object.keys(gruppi).sort().forEach(dataKey => {
+      const dFormattata = dataKey.split("-").reverse().join("/");
+      html += `<div class="date-group-header">${dFormattata}</div>`;
+      
+      gruppi[dataKey].sort((a,b) => a.start.localeCompare(b.start)).forEach(b => {
+        // Forza l'espositore a una sola lettera per il badge
+        let esp = "A";
+        if (b.espositore) {
+          let s = b.espositore.toString();
+          esp = s.includes("-") || s.includes("T") ? "A" : s.charAt(0).toUpperCase();
+        }
+        const badgeClass = esp === 'B' ? 'badge-b' : 'badge-a';
+        
+        html += `
+          <div class="booking-card">
+            <div style="flex: 1; min-width: 0;">
+              <strong style="font-size:24px; display:block; margin-bottom:4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${b.name}</strong>
+              <span style="font-size:19px; opacity:0.8;">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
+            </div>
+            <div class="badge ${badgeClass}">Esp.<span>${esp}</span></div>
+          </div>`;
+      });
+    });
+    container.innerHTML = html || "<p style='text-align:center;'>Nessuna prenotazione trovata.</p>";
+  } catch (e) { 
+    container.innerHTML = "<p style='text-align:center;'>Errore caricamento dati.</p>"; 
+  }
+}
+
+// Rendo la funzione accessibile al pulsante HTML
+window.caricaRiepilogo = caricaRiepilogo;
+
 document.getElementById("check").onclick = async () => {
   const espositore = document.getElementById("espositore").value;
   const dateVal = document.getElementById("date").value;
   const start = document.getElementById("start").value;
   const end = document.getElementById("end").value;
 
-  document.querySelectorAll(".field-label").forEach(l => l.classList.remove("label-error"));
-
   if (!dateVal || !start || !end) return alert("Inserisci tutti i dati temporali.");
-
-  const oraAttuale = new Date();
-  const dataScelta = new Date(dateVal);
-  dataScelta.setHours(0,0,0,0);
-  const oggiStr = oraAttuale.toISOString().split("T")[0];
-  const oraCorrenteStr = oraAttuale.getHours().toString().padStart(2, '0') + ":" + oraAttuale.getMinutes().toString().padStart(2, '0');
-
-  if (dataScelta < new Date().setHours(0,0,0,0)) {
-    document.querySelector("label[for='date']").classList.add("label-error");
-    return alert("Non puoi prenotare una data nel passato.");
-  }
-
-  if (dateVal === oggiStr && start < oraCorrenteStr) {
-    document.querySelector("label[for='start']").classList.add("label-error");
-    return alert(`L'orario di inizio (${start}) è già passato. Adesso sono le ${oraCorrenteStr}.`);
-  }
-
-  if (start >= end) {
-    document.querySelector("label[for='start']").classList.add("label-error");
-    document.querySelector("label[for='end']").classList.add("label-error");
-    return alert("L'orario di fine deve essere dopo l'inizio.");
-  }
 
   const checkingOverlay = document.getElementById("checkingOverlay");
   checkingOverlay.style.display = "flex";
@@ -70,11 +96,9 @@ document.getElementById("check").onclick = async () => {
 
 document.getElementById("send").onclick = () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const telegramId = urlParams.get('user');
-
   const payload = {
     action: "submit",
-    telegramId: telegramId,
+    telegramId: urlParams.get('user'),
     espositore: document.getElementById("espositore").value,
     date: document.getElementById("date").value,
     start: document.getElementById("start").value,
@@ -86,12 +110,10 @@ document.getElementById("send").onclick = () => {
   if (payload.name.length < 3) return alert("Inserisci il tuo nome.");
 
   document.getElementById("confirmText").innerHTML = `
-    <div style="line-height:1.6; font-size:22px;">
-      <b>Espositore:</b> ${payload.espositore}<br>
-      <b>Data:</b> ${payload.date.split("-").reverse().join("/")}<br>
-      <b>Orario:</b> ${payload.start} - ${payload.end}<br>
-      <b>Nome:</b> ${payload.name}
-    </div>
+    <b>Espositore:</b> ${payload.espositore}<br>
+    <b>Data:</b> ${payload.date.split("-").reverse().join("/")}<br>
+    <b>Orario:</b> ${payload.start} - ${payload.end}<br>
+    <b>Nome:</b> ${payload.name}
   `;
   document.getElementById("confirmModal").style.display = "flex";
   window.currentBooking = payload;
@@ -102,62 +124,19 @@ document.getElementById("confirmYes").onclick = async () => {
   document.getElementById("loadingOverlay").style.display = "flex";
   try {
     const res = await fetch(API, { method: "POST", body: JSON.stringify(window.currentBooking) });
-    const r = await res.json();
-    if (r.success) {
-      alert("Prenotazione salvata!");
-      window.location.reload();
-    }
-  } catch (e) { alert("Errore invio."); }
-  finally { document.getElementById("loadingOverlay").style.display = "none"; }
+    window.location.reload();
+  } catch (e) { 
+    alert("Errore invio."); 
+    document.getElementById("loadingOverlay").style.display = "none";
+  }
 };
 
 document.getElementById("confirmNo").onclick = () => document.getElementById("confirmModal").style.display = "none";
 
-async function caricaRiepilogo() {
-  const container = document.getElementById("riepilogo");
-  container.innerHTML = "<p style='text-align:center; padding:30px;'>🔄 Sincronizzazione in corso...</p>";
-
-  try {
-    const res = await fetch(API + "?action=list");
-    const bookings = await res.json();
-    const gruppi = {};
-    
-    bookings.forEach(b => {
-      const dataPulita = b.date.substring(0, 10);
-      if (!gruppi[dataPulita]) gruppi[dataPulita] = [];
-      gruppi[dataPulita].push(b);
-    });
-
-    let html = "";
-    Object.keys(gruppi).sort().forEach(dataKey => {
-      const dFormattata = dataKey.split("-").reverse().join("/");
-      html += `<div class="date-group-header">${dFormattata}</div>`;
-      
-      gruppi[dataKey].sort((a,b) => a.start.localeCompare(b.start)).forEach(b => {
-        const espositoreLettera = b.espositore ? b.espositore.toString().charAt(0).toUpperCase() : 'A';
-        const badgeClass = espositoreLettera === 'B' ? 'badge-b' : 'badge-a';
-        
-        html += `
-          <div class="booking-card">
-            <div style="flex: 1; min-width: 0;">
-              <strong style="font-size:24px; display:block; margin-bottom:4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${b.name}</strong>
-              <span style="font-size:19px; opacity:0.8;">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
-            </div>
-            <div class="badge ${badgeClass}">Esp.<span>${espositoreLettera}</span></div>
-          </div>`;
-      });
-    });
-    container.innerHTML = html || "<p style='text-align:center;'>Nessuna prenotazione trovata.</p>";
-  } catch (e) { container.innerHTML = "<p style='text-align:center;'>Errore caricamento dati.</p>"; }
-}
-
 window.onload = () => {
   const oggi = new Date().toISOString().split("T")[0];
   const dateIn = document.getElementById("date");
-  if(dateIn) {
-    dateIn.value = oggi;
-    dateIn.setAttribute("min", oggi);
-  }
+  if(dateIn) { dateIn.value = oggi; dateIn.setAttribute("min", oggi); }
 
   document.getElementById("openPostazioni").onclick = () => document.getElementById("postazioniMenu").classList.add("show");
   document.getElementById("closePostazioni").onclick = () => document.getElementById("postazioniMenu").classList.remove("show");
@@ -169,7 +148,5 @@ window.onload = () => {
     </div>
   `).join("");
 
-  caricaRiepilogo();
-};
   caricaRiepilogo();
 };
