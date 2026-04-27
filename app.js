@@ -27,8 +27,8 @@ async function caricaRiepilogo() {
     const gruppi = {};
     
     bookings.forEach(b => {
-      // Usiamo 'data' che arriva già formattata yyyy-MM-dd
-      let dKey = b.data ? b.data.toString().substring(0, 10) : "Senza Data";
+      // Usiamo la data pulita dallo script
+      let dKey = b.data || "Senza Data";
       if (!gruppi[dKey]) gruppi[dKey] = [];
       gruppi[dKey].push(b);
     });
@@ -38,24 +38,22 @@ async function caricaRiepilogo() {
       const dF = dateKey.split("-").reverse().join("/");
       html += `<div class="date-group-header">${dF}</div>`;
       
-      gruppi[dateKey].sort((a,b) => a.inizio.localeCompare(b.inizio)).forEach(b => {
-        // Pulizia espositore
-        let eLettera = (b.espositore && b.espositore.toString().length === 1) ? b.espositore : "A";
-        const badgeClass = eLettera === 'B' ? 'badge-b' : 'badge-a';
+      gruppi[dateKey].sort((a,b) => a.inizio.toString().localeCompare(b.inizio.toString())).forEach(b => {
+        const badgeClass = b.espositore === 'B' ? 'badge-b' : 'badge-a';
         
         html += `
           <div class="booking-card">
             <div style="flex: 1; min-width: 0;">
-              <strong style="font-size:24px; display:block; margin-bottom:4px;">${b.nome || 'Anonimo'}</strong>
+              <strong style="font-size:24px; display:block; margin-bottom:4px;">${b.nome}</strong>
               <span style="font-size:19px; opacity:0.8;">Post. ${b.postazione} | 🕒 ${b.inizio}-${b.fine}</span>
             </div>
-            <div class="badge ${badgeClass}">Esp.<span>${eLettera}</span></div>
+            <div class="badge ${badgeClass}">Esp.<span>${b.espositore}</span></div>
           </div>`;
       });
     });
     container.innerHTML = html || "<p style='text-align:center;'>Nessuna prenotazione.</p>";
   } catch (e) { 
-    container.innerHTML = "<p style='text-align:center;'>Errore dati.</p>"; 
+    container.innerHTML = "<p style='text-align:center;'>Errore di sincronizzazione.</p>"; 
   }
 }
 
