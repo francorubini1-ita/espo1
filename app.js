@@ -12,7 +12,6 @@ const POSTAZIONI = [
 ];
 
 function mapLink(lat, lon) {
-  // Corretto il link per Google Maps
   return `https://www.google.com/maps?q=${lat},${lon}`;
 }
 
@@ -124,7 +123,7 @@ async function caricaRiepilogo() {
     const gruppi = {};
     
     bookings.forEach(b => {
-      // PULIZIA DATA: Prende solo YYYY-MM-DD
+      // PULIZIA RIGOROSA DATA per evitare caos nel layout
       const dataPulita = b.date.substring(0, 10);
       if (!gruppi[dataPulita]) gruppi[dataPulita] = [];
       gruppi[dataPulita].push(b);
@@ -167,7 +166,5 @@ window.onload = () => {
     </div>
   `).join("");
 
-  caricaRiepilogo();
-};
   caricaRiepilogo();
 };
