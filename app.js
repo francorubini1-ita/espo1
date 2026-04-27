@@ -19,7 +19,7 @@ function mapLink(lat, lon) {
 async function caricaRiepilogo() {
   const container = document.getElementById("riepilogo");
   if (!container) return;
-  container.innerHTML = "<p style='text-align:center; padding:30px;'>🔄 Aggiornamento in corso...</p>";
+  container.innerHTML = "<p style='text-align:center; padding:30px;'>🔄 Caricamento...</p>";
 
   try {
     const res = await fetch(API + "?action=list");
@@ -27,50 +27,35 @@ async function caricaRiepilogo() {
     const gruppi = {};
     
     bookings.forEach(b => {
-      // Usamo 'data' perché lo script sopra ora pulisce l'intestazione
-      let dataKey = b.data; 
-  
-      // Se per qualche motivo arriva ancora una data completa, prendi solo YYYY-MM-DD
-      if (typeof dataKey === "string" && dataKey.includes("T")) {
-        dataKey = dataKey.split("T")[0];
-      }
-
-      if (!gruppi[dataKey]) gruppi[dataKey] = [];
-      gruppi[dataKey].push(b);
+      // Usiamo 'data' che arriva già formattata yyyy-MM-dd
+      let dKey = b.data ? b.data.toString().substring(0, 10) : "Senza Data";
+      if (!gruppi[dKey]) gruppi[dKey] = [];
+      gruppi[dKey].push(b);
     });
 
     let html = "";
-    // Ordiniamo le date in modo cronologico
-    const dateOrdinate = Object.keys(gruppi).sort();
-
-    dateOrdinate.forEach(dataKey => {
-      // Formattiamo da YYYY-MM-DD a DD/MM/YYYY per il titolo
-      const parti = dataKey.split("-");
-      const dFormattata = parti.length === 3 ? `${parti[2]}/${parti[1]}/${parti[0]}` : dataKey;
+    Object.keys(gruppi).sort().forEach(dateKey => {
+      const dF = dateKey.split("-").reverse().join("/");
+      html += `<div class="date-group-header">${dF}</div>`;
       
-      html += `<div class="date-group-header">${dFormattata}</div>`;
-      
-      gruppi[dataKey].sort((a,b) => a.start.localeCompare(b.start)).forEach(b => {
-        let esp = "A";
-        if (b.espositore) {
-            let s = b.espositore.toString();
-            esp = (s.includes("-") || s.includes("T")) ? "A" : s.trim().charAt(0).toUpperCase();
-        }
-        const badgeClass = esp === 'B' ? 'badge-b' : 'badge-a';
+      gruppi[dateKey].sort((a,b) => a.inizio.localeCompare(b.inizio)).forEach(b => {
+        // Pulizia espositore
+        let eLettera = (b.espositore && b.espositore.toString().length === 1) ? b.espositore : "A";
+        const badgeClass = eLettera === 'B' ? 'badge-b' : 'badge-a';
         
         html += `
           <div class="booking-card">
             <div style="flex: 1; min-width: 0;">
-              <strong style="font-size:24px; display:block; margin-bottom:4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${b.name}</strong>
-              <span style="font-size:19px; opacity:0.8;">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
+              <strong style="font-size:24px; display:block; margin-bottom:4px;">${b.nome || 'Anonimo'}</strong>
+              <span style="font-size:19px; opacity:0.8;">Post. ${b.postazione} | 🕒 ${b.inizio}-${b.fine}</span>
             </div>
-            <div class="badge ${badgeClass}">Esp.<span>${esp}</span></div>
+            <div class="badge ${badgeClass}">Esp.<span>${eLettera}</span></div>
           </div>`;
       });
     });
-    container.innerHTML = html || "<p style='text-align:center;'>Nessuna prenotazione trovata.</p>";
+    container.innerHTML = html || "<p style='text-align:center;'>Nessuna prenotazione.</p>";
   } catch (e) { 
-    container.innerHTML = "<p style='text-align:center;'>Errore caricamento dati.</p>"; 
+    container.innerHTML = "<p style='text-align:center;'>Errore dati.</p>"; 
   }
 }
 
