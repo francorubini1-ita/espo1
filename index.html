@@ -10,11 +10,11 @@
 
 <section id="prenotazione-espositore">
   <div id="app">
-    <div class="app-header">Prenotazione Espositori</div>
+    <div class="app-header">Prenotazione espositori</div>
 
     <div class="card">
       <div class="field">
-        <label class="field-label" for="espositore">Scegli Espositore</label>
+        <label class="field-label" for="espositore">Scegli l'espositore</label>
         <select class="field-input" id="espositore">
           <option value="A">Espositore A</option>
           <option value="B">Espositore B</option>
@@ -22,17 +22,17 @@
       </div>
 
       <div class="field">
-        <label class="field-label" for="date">Data</label>
+        <label class="field-label" for="date">Quando?</label>
         <input class="field-input" type="date" id="date">
       </div>
 
       <div class="field time-row">
         <div class="time-col">
-          <label class="field-label" for="start">Inizio</label>
+          <label class="field-label" for="start">Dalle...</label>
           <input class="field-input" type="time" id="start">
         </div>
         <div class="time-col">
-          <label class="field-label" for="end">Fine</label>
+          <label class="field-label" for="end">Alle...</label>
           <input class="field-input" type="time" id="end">
         </div>
       </div>
@@ -48,7 +48,7 @@
       </div>
       
       <div class="field">
-        <label class="field-label" for="postazione">Postazione</label>
+        <label class="field-label" for="postazione">In quale postazione?</label>
         <select class="field-input" id="postazione">
           <option value="1">Postazione 1</option>
           <option value="2">Postazione 2</option>
@@ -61,28 +61,28 @@
         </select>
       </div>
 
-      <button id="openPostazioni" class="postazioni-inline-btn">📍 Mappa Postazioni</button>
+      <button id="openPostazioni" class="postazioni-inline-btn">📍 Mappa delle postazioni</button>
     </div>
 
     <div id="formContainer">
       <div id="detailsPanel"></div>
-      <button id="check">Controlla disponibilità</button>
-      <button id="send" disabled>Invia prenotazione</button>
+      <button id="check">Controlla la disponibilità</button>
+      <button id="send" disabled>Invia la prenotazione</button>
     </div>
 
-    <h3 class="title" style="margin: 30px 15px 15px; font-size: 24px;">Riepilogo prenotazioni</h3>
+    <h3 class="title" style="margin: 30px 15px 15px; font-size: 24px;">Riepilogo prenotazioni:</h3>
     <div class="update-wrap" style="text-align:right; padding-right:15px; margin-bottom: 10px;">
-        <button class="secondary" style="width:auto; padding:8px 20px; font-size:18px;" onclick="caricaRiepilogo()">🔄 Aggiorna</button>
+        <button class="secondary" style="width:auto; padding:8px 20px; font-size:18px;" onclick="caricaRiepilogo()">🔄 Aggiorna...</button>
     </div>
     <div id="riepilogo"></div>
 
     <div id="confirmModal" class="glass-overlay">
       <div id="confirmBox">
-        <h3>Confermi i dati?</h3>
+        <h3>Confermi questi dati?</h3>
         <p id="confirmText"></p>
         <div style="display:flex; gap:15px; margin-top:25px;">
-          <button id="confirmYes" style="background:var(--success); color:white;">Conferma</button>
-          <button id="confirmNo" class="secondary">Annulla</button>
+          <button id="confirmYes" style="background:var(--success); color:white;">Confermo!</button>
+          <button id="confirmNo" class="secondary">Annullo...</button>
         </div>
       </div>
     </div>
