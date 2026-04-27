@@ -27,12 +27,16 @@ async function caricaRiepilogo() {
     const gruppi = {};
     
     bookings.forEach(b => {
-      // FIX DATA: Prendiamo solo i primi 10 caratteri (YYYY-MM-DD) 
-      // Ignoriamo orari e fusi orari che causano il bug del giorno precedente
-      let dataStringa = b.date.toString().substring(0, 10);
-      
-      if (!gruppi[dataStringa]) gruppi[dataStringa] = [];
-      gruppi[dataStringa].push(b);
+      // Usamo 'data' perché lo script sopra ora pulisce l'intestazione
+      let dataKey = b.data; 
+  
+      // Se per qualche motivo arriva ancora una data completa, prendi solo YYYY-MM-DD
+      if (typeof dataKey === "string" && dataKey.includes("T")) {
+        dataKey = dataKey.split("T")[0];
+      }
+
+      if (!gruppi[dataKey]) gruppi[dataKey] = [];
+      gruppi[dataKey].push(b);
     });
 
     let html = "";
