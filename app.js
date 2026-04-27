@@ -133,7 +133,7 @@ async function caricaRiepilogo() {
 
     let html = "";
     Object.keys(gruppi).sort().forEach(data => {
-      const dFormattata = data.split("-").reverse().join("/");
+      const dFormattata = data.split("T")[0].split("-").reverse().join("/");
       html += `<div class="date-group-header">${dFormattata}</div>`;
       gruppi[data].sort((a,b) => a.start.localeCompare(b.start)).forEach(b => {
         const badgeClass = b.espositore === 'B' ? 'badge-b' : 'badge-a';
