@@ -15,7 +15,7 @@ function mapLink(lat, lon) {
   return `https://www.google.com/maps?q=${lat},${lon}`;
 }
 
-// Funzione globale per il tasto Aggiorna
+// Funzione globale per caricare il riepilogo
 async function caricaRiepilogo() {
   const container = document.getElementById("riepilogo");
   if (!container) return;
@@ -38,11 +38,11 @@ async function caricaRiepilogo() {
       html += `<div class="date-group-header">${dFormattata}</div>`;
       
       gruppi[dataKey].sort((a,b) => a.start.localeCompare(b.start)).forEach(b => {
-        // Forza l'espositore a una sola lettera per il badge
+        // Pulizia Badge: Prende solo 'A' o 'B'
         let esp = "A";
         if (b.espositore) {
-          let s = b.espositore.toString();
-          esp = s.includes("-") || s.includes("T") ? "A" : s.charAt(0).toUpperCase();
+            let s = b.espositore.toString();
+            esp = (s.includes("-") || s.includes("T")) ? "A" : s.trim().charAt(0).toUpperCase();
         }
         const badgeClass = esp === 'B' ? 'badge-b' : 'badge-a';
         
@@ -62,9 +62,10 @@ async function caricaRiepilogo() {
   }
 }
 
-// Rendo la funzione accessibile al pulsante HTML
+// Rendo la funzione disponibile globalmente per il pulsante Aggiorna dell'HTML
 window.caricaRiepilogo = caricaRiepilogo;
 
+// Controllo disponibilità
 document.getElementById("check").onclick = async () => {
   const espositore = document.getElementById("espositore").value;
   const dateVal = document.getElementById("date").value;
@@ -85,7 +86,7 @@ document.getElementById("check").onclick = async () => {
       alert(`✅ Espositore ${espositore} LIBERO!`);
       document.getElementById("send").disabled = false;
     } else {
-      alert(`❌ Occupato su Espositore ${espositore} da: ${data.with[0].name}`);
+      alert(`❌ Occupato da: ${data.with[0].name}`);
       document.getElementById("send").disabled = true;
     }
   } catch (e) { 
@@ -94,6 +95,7 @@ document.getElementById("check").onclick = async () => {
   }
 };
 
+// Invio prenotazione
 document.getElementById("send").onclick = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const payload = {
@@ -112,8 +114,7 @@ document.getElementById("send").onclick = () => {
   document.getElementById("confirmText").innerHTML = `
     <b>Espositore:</b> ${payload.espositore}<br>
     <b>Data:</b> ${payload.date.split("-").reverse().join("/")}<br>
-    <b>Orario:</b> ${payload.start} - ${payload.end}<br>
-    <b>Nome:</b> ${payload.name}
+    <b>Orario:</b> ${payload.start} - ${payload.end}
   `;
   document.getElementById("confirmModal").style.display = "flex";
   window.currentBooking = payload;
@@ -123,7 +124,7 @@ document.getElementById("confirmYes").onclick = async () => {
   document.getElementById("confirmModal").style.display = "none";
   document.getElementById("loadingOverlay").style.display = "flex";
   try {
-    const res = await fetch(API, { method: "POST", body: JSON.stringify(window.currentBooking) });
+    await fetch(API, { method: "POST", body: JSON.stringify(window.currentBooking) });
     window.location.reload();
   } catch (e) { 
     alert("Errore invio."); 
@@ -133,20 +134,34 @@ document.getElementById("confirmYes").onclick = async () => {
 
 document.getElementById("confirmNo").onclick = () => document.getElementById("confirmModal").style.display = "none";
 
+// Inizializzazione al caricamento
 window.onload = () => {
   const oggi = new Date().toISOString().split("T")[0];
   const dateIn = document.getElementById("date");
   if(dateIn) { dateIn.value = oggi; dateIn.setAttribute("min", oggi); }
 
-  document.getElementById("openPostazioni").onclick = () => document.getElementById("postazioniMenu").classList.add("show");
-  document.getElementById("closePostazioni").onclick = () => document.getElementById("postazioniMenu").classList.remove("show");
+  // Pulsante Mappa Postazioni
+  const btnOpen = document.getElementById("openPostazioni");
+  if(btnOpen) {
+    btnOpen.onclick = () => document.getElementById("postazioniMenu").classList.add("show");
+  }
 
-  document.getElementById("postazioniList").innerHTML = POSTAZIONI.map(p => `
-    <div style="padding:18px 0; border-bottom:1px solid var(--ios-border);">
-      <strong style="font-size:22px;">${p.nome}</strong><br>
-      <a href="${mapLink(p.lat, p.lon)}" target="_blank" style="color:var(--primary); font-size:20px; text-decoration:none;">📍 Apri Mappa GPS</a>
-    </div>
-  `).join("");
+  // Pulsante Chiudi Mappa
+  const btnClose = document.getElementById("closePostazioni");
+  if(btnClose) {
+    btnClose.onclick = () => document.getElementById("postazioniMenu").classList.remove("show");
+  }
+
+  // Generazione lista postazioni
+  const listContainer = document.getElementById("postazioniList");
+  if(listContainer) {
+    listContainer.innerHTML = POSTAZIONI.map(p => `
+      <div style="padding:18px 0; border-bottom:1px solid var(--ios-border);">
+        <strong style="font-size:22px;">${p.nome}</strong><br>
+        <a href="${mapLink(p.lat, p.lon)}" target="_blank" style="color:var(--primary); font-size:20px; text-decoration:none;">📍 Apri Mappa GPS</a>
+      </div>
+    `).join("");
+  }
 
   caricaRiepilogo();
 };
