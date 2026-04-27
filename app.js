@@ -123,7 +123,6 @@ async function caricaRiepilogo() {
     const gruppi = {};
     
     bookings.forEach(b => {
-      // PRENDE SOLO LA DATA PULITA PER IL RAGGRUPPAMENTO
       const dataPulita = b.date.substring(0, 10);
       if (!gruppi[dataPulita]) gruppi[dataPulita] = [];
       gruppi[dataPulita].push(b);
@@ -135,14 +134,16 @@ async function caricaRiepilogo() {
       html += `<div class="date-group-header">${dFormattata}</div>`;
       
       gruppi[dataKey].sort((a,b) => a.start.localeCompare(b.start)).forEach(b => {
-        const badgeClass = b.espositore === 'B' ? 'badge-b' : 'badge-a';
+        const espositoreLettera = b.espositore ? b.espositore.toString().charAt(0).toUpperCase() : 'A';
+        const badgeClass = espositoreLettera === 'B' ? 'badge-b' : 'badge-a';
+        
         html += `
           <div class="booking-card">
             <div style="flex: 1; min-width: 0;">
               <strong style="font-size:24px; display:block; margin-bottom:4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${b.name}</strong>
               <span style="font-size:19px; opacity:0.8;">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
             </div>
-            <div class="badge ${badgeClass}">Esp.<span>${b.espositore || 'A'}</span></div>
+            <div class="badge ${badgeClass}">Esp.<span>${espositoreLettera}</span></div>
           </div>`;
       });
     });
@@ -168,5 +169,7 @@ window.onload = () => {
     </div>
   `).join("");
 
+  caricaRiepilogo();
+};
   caricaRiepilogo();
 };
