@@ -147,25 +147,27 @@ document.getElementById("send").onclick = () => {
   // 2. Crea l'oggetto "payload" con tutti i dati inseriti dall'utente nel modulo
   const payload = {
     action: "submit", // Indica allo script di Google che vogliamo inserire una nuova riga
-    telegramId: urlParams.get('user'), // Prende il parametro 'user' dall'URL
+    telegramId: urlParams.get('user') || "Utente Web", // Prende il parametro 'user' dall'URL o fallback
     espositore: document.getElementById("espositore").value, // Valore A o B
     date: document.getElementById("date").value, // Data selezionata (YYYY-MM-DD)
     start: document.getElementById("start").value, // Orario inizio
     end: document.getElementById("end").value, // Orario fine
     name: document.getElementById("name").value.trim(), // Nome (rimuove spazi inutili ai lati)
-    postazione: document.getElementById("postazione").value // Numero della postazione
+    postazione: document.getElementById("postazione").value, // Numero della postazione
+    phone: document.getElementById("phone") ? document.getElementById("phone").value.trim() : "" // Recupera il telefono
   };
 
-  // 3. Validazione Nome: Se il nome è più corto di 3 lettere, blocca tutto e avvisa l'utente
+  // 3. Validazioni Nome e Telefono
   if (payload.name.length < 3) return alert("Inserisci il tuo nome completo.");
+  if (payload.phone && payload.phone.length < 6) return alert("Inserisci un numero di telefono valido.");
 
   // 4. Formattazione Data: Trasforma la data da "2026-04-27" a "27/04/2026" per renderla leggibile
   const dConf = payload.date.split("-").reverse().join("/");
 
-  // 5. Costruzione del Riepilogo Visivo: Inserisce i dati nel testo della finestra di conferma (modal)
-  // Qui aggiungiamo Nome e Numero Postazione come richiesto
+  // 5. Costruzione del Riepilogo Visivo nel popup di conferma (modal)
   document.getElementById("confirmText").innerHTML = `
     <b>Nome:</b> ${payload.name}<br>
+    <b>Telefono:</b> ${payload.phone}<br>
     <b>Postazione:</b> ${payload.postazione}<br>
     <b>Espositore:</b> ${payload.espositore}<br>
     <b>Data:</b> ${dConf}<br>
@@ -175,8 +177,7 @@ document.getElementById("send").onclick = () => {
   // 6. Mostra il popup (modal) impostando lo stile display su "flex"
   document.getElementById("confirmModal").style.display = "flex";
   
-  // 7. Salvataggio Temporaneo: Salva i dati in una variabile globale
-  // Questa verrà usata dalla funzione "confirmYes" se l'utente preme "Sì, conferma"
+  // 7. Salvataggio Temporaneo per la funzione "confirmYes"
   window.currentBooking = payload;
 };
 
@@ -228,3 +229,5 @@ window.onload = () => {
   // Carica i dati esistenti
   caricaRiepilogo();
 };
+
+
