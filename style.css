@@ -101,7 +101,7 @@ button {
 }
 
 /* ============================================================
-    BADGE ESPOSITORI - VERSIONE ANTI-CAOS (Corretta)
+    RIEPILOGO PRENOTAZIONI (Stile Apple-like)
    ============================================================ */
 .date-group-header {
   margin: 30px 15px 10px;
@@ -113,48 +113,61 @@ button {
 
 .booking-card {
   background: var(--card-bg);
-  padding: 15px;
-  margin: 0 15px 15px;
+  padding: 16px;
+  margin: 0 15px 12px;
   border-radius: 14px;
   border: 1px solid var(--ios-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  overflow: hidden; /* Sicurezza extra */
+  gap: 12px;
+  overflow: hidden;
 }
 
-.booking-card > div:first-child {
+.booking-info {
   flex: 1;
-  min-width: 0; /* Permette al testo di non spingere fuori il badge */
+  min-width: 0;
+}
+
+.booking-name {
+  display: block;
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.booking-details {
+  display: block;
+  font-size: 17px;
+  opacity: 0.8;
 }
 
 .badge {
-  flex-shrink: 0; /* Impedisce al badge di deformarsi */
-  width: 65px;    /* Larghezza fissa anti-caos */
-  max-width: 65px;
-  height: 55px;   /* Altezza fissa anti-caos */
-  overflow: hidden; /* Taglia i testi lunghi (come la data ISO) */
-  font-size: 12px; 
-  padding: 5px;
-  border-radius: 10px;
+  flex-shrink: 0; 
+  width: 70px;    
+  max-width: 70px;
+  height: 58px;   
+  border-radius: 12px;
   font-weight: 900;
   color: white; 
   text-align: center;
-  line-height: 1;
+  line-height: 1.1;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  font-size: 13px;
 }
 
 .badge span {
   display: block; 
-  font-size: 24px; 
-  margin-top: 2px;
+  font-size: 26px; 
 }
 
-.badge-a { background-color: var(--espositore-a); box-shadow: 0 2px 8px rgba(0,71,255,0.4); }
-.badge-b { background-color: var(--espositore-b); box-shadow: 0 2px 8px rgba(255,149,0,0.4); }
+.badge-a { background-color: var(--espositore-a); box-shadow: 0 3px 10px rgba(0,71,255,0.3); }
+.badge-b { background-color: var(--espositore-b); box-shadow: 0 3px 10px rgba(255,149,0,0.3); }
 
 /* ============================================================
     OVERLAY E MENU
@@ -219,6 +232,8 @@ button {
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+.label-error { color: var(--error) !important; animation: shake 0.4s; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 .label-error { color: var(--error) !important; animation: shake 0.4s; }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
 
