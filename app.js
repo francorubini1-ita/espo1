@@ -123,7 +123,7 @@ async function caricaRiepilogo() {
     const gruppi = {};
     
     bookings.forEach(b => {
-      // PULIZIA RIGOROSA DATA per evitare caos nel layout
+      // PRENDE SOLO LA DATA PULITA PER IL RAGGRUPPAMENTO
       const dataPulita = b.date.substring(0, 10);
       if (!gruppi[dataPulita]) gruppi[dataPulita] = [];
       gruppi[dataPulita].push(b);
@@ -138,23 +138,25 @@ async function caricaRiepilogo() {
         const badgeClass = b.espositore === 'B' ? 'badge-b' : 'badge-a';
         html += `
           <div class="booking-card">
-            <div class="booking-info">
-              <strong class="booking-name">${b.name}</strong>
-              <span class="booking-details">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
+            <div style="flex: 1; min-width: 0;">
+              <strong style="font-size:24px; display:block; margin-bottom:4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${b.name}</strong>
+              <span style="font-size:19px; opacity:0.8;">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
             </div>
             <div class="badge ${badgeClass}">Esp.<span>${b.espositore || 'A'}</span></div>
           </div>`;
       });
     });
     container.innerHTML = html || "<p style='text-align:center;'>Nessuna prenotazione trovata.</p>";
-  } catch (e) { container.innerHTML = "<p style='text-align:center;'>Errore durante il caricamento dei dati.</p>"; }
+  } catch (e) { container.innerHTML = "<p style='text-align:center;'>Errore caricamento dati.</p>"; }
 }
 
 window.onload = () => {
   const oggi = new Date().toISOString().split("T")[0];
   const dateIn = document.getElementById("date");
-  dateIn.value = oggi;
-  dateIn.setAttribute("min", oggi);
+  if(dateIn) {
+    dateIn.value = oggi;
+    dateIn.setAttribute("min", oggi);
+  }
 
   document.getElementById("openPostazioni").onclick = () => document.getElementById("postazioniMenu").classList.add("show");
   document.getElementById("closePostazioni").onclick = () => document.getElementById("postazioniMenu").classList.remove("show");
