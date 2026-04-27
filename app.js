@@ -1,5 +1,7 @@
+// URL dell'API di Google Apps Script (il "ponte" verso il foglio Google)
 const API = "https://script.google.com/macros/s/AKfycbzHmkvVWE12RA3MFycv4Cak9SghvkGYJzImfICdG4nLSKby47SIwnZgzXpR3cnRZrTh/exec";
 
+// Database locale delle postazioni con coordinate GPS
 const POSTAZIONI = [
   { id: 1, nome: "Postazione 1", lat: 44.877242, lon: 11.858320 },  
   { id: 2, nome: "Postazione 2", lat: 44.577242, lon: 11.358320 },  
@@ -11,11 +13,17 @@ const POSTAZIONI = [
   { id: 8, nome: "Postazione 8", lat: 44.556829, lon: 11.319514 }
 ];
 
+/**
+ * Genera il link per aprire Google Maps alle coordinate indicate
+ */
 function mapLink(lat, lon) {
   return `https://www.google.com/maps?q=${lat},${lon}`;
 }
 
-// Funzione globale per caricare il riepilogo
+/**
+ * Funzione per scaricare e visualizzare tutte le prenotazioni esistenti.
+ * Organizza i dati per data e ordina gli orari cronologicamente.
+ */
 async function caricaRiepilogo() {
   const container = document.getElementById("riepilogo");
   if (!container) return;
@@ -26,30 +34,27 @@ async function caricaRiepilogo() {
     const bookings = await res.json();
     const gruppi = {};
     
+    // Raggruppa le prenotazioni per data
     bookings.forEach(b => {
-  // Prendiamo la stringa così come arriva dallo script
-  let dKey = b.data; 
+      let dKey = b.data; 
+      if (dKey && dKey.includes("T")) {
+        dKey = dKey.split("T")[0]; // Pulisce formato data ISO se presente
+      }
+      if (!dKey) dKey = "Senza Data";
 
-  // Se per caso arriva un formato lungo (ISO), tagliamo ai primi 10 caratteri
-  if (dKey && dKey.includes("T")) {
-    dKey = dKey.split("T")[0];
-  }
-  
-  // Se ancora non è nel formato corretto, non caricarla o usa un fallback
-  if (!dKey) dKey = "Senza Data";
-
-  if (!gruppi[dKey]) gruppi[dKey] = [];
-  gruppi[dKey].push(b);
-});
+      if (!gruppi[dKey]) gruppi[dKey] = [];
+      gruppi[dKey].push(b);
+    });
 
     let html = "";
+    // Ordina le date e genera l'HTML per ogni gruppo
     Object.keys(gruppi).sort().forEach(dateKey => {
-      const dF = dateKey.split("-").reverse().join("/");
+      const dF = dateKey.split("-").reverse().join("/"); // Formatta in DD/MM/YYYY
       html += `<div class="date-group-header">${dF}</div>`;
       
+      // Ordina per orario di inizio e crea le card
       gruppi[dateKey].sort((a,b) => a.inizio.toString().localeCompare(b.inizio.toString())).forEach(b => {
         const badgeClass = b.espositore === 'B' ? 'badge-b' : 'badge-a';
-        
         html += `
           <div class="booking-card">
             <div style="flex: 1; min-width: 0;">
@@ -66,53 +71,53 @@ async function caricaRiepilogo() {
   }
 }
 
+// Rende la funzione accessibile globalmente
 window.caricaRiepilogo = caricaRiepilogo;
 
+/**
+ * Gestisce il controllo di disponibilità prima della prenotazione.
+ * Include validazioni su date passate, orari invertiti e sovrapposizioni.
+ */
 document.getElementById("check").onclick = async () => {
   const espositore = document.getElementById("espositore").value;
-  const oggi = new Date().toISOString().split("T")[0];
-   const dateVal = document.getElementById("date").value;
+  const dateVal = document.getElementById("date").value;
   const start = document.getElementById("start").value;
   const end = document.getElementById("end").value;
-  const sendBtn = document.getElementById("send"); // Il tasto Prenota
+  const sendBtn = document.getElementById("send");
 
-  // Reset dello stato del tasto prenota ogni volta che fai un nuovo check
+  // Disabilita il tasto invio finché non viene superato il controllo
   sendBtn.disabled = true;
 
-  // 1. Calcolo "Adesso" locale
+  // Calcolo riferimenti temporali attuali per validazione
   const oraAttuale = new Date();
   const z = oraAttuale.getTimezoneOffset() * 60 * 1000;
   const oggiLocale = new Date(oraAttuale - z).toISOString().split('T')[0];
   const orarioAdesso = oraAttuale.getHours().toString().padStart(2, '0') + ":" + 
                        oraAttuale.getMinutes().toString().padStart(2, '0');
 
-  // 2. VALIDAZIONI
+  // Blocchi logici preventivi
   if (!dateVal || !start || !end) {
     alert("⚠️ Inserisci data, ora inizio e ora fine.");
     return;
   }
-
   if (dateVal < oggiLocale) {
     alert("❌ Non puoi prenotare una data passata!");
     return;
   }
-
   if (dateVal === oggiLocale && start < orarioAdesso) {
     alert("❌ L'orario di inizio è già passato!");
     return;
   }
-
   if (start >= end) {
     alert("❌ L'orario di fine deve essere successivo a quello di inizio!");
     return;
   }
 
-  // 3. SE I CONTROLLI PASSANO, AVVIA IL CONTROLLO SERVER
   const checkingOverlay = document.getElementById("checkingOverlay");
   checkingOverlay.style.display = "flex";
 
   try {
-    const espositore = document.getElementById("espositore").value;
+    // Interroga il server Google per verificare sovrapposizioni nel database
     const res = await fetch(`${API}?action=check&date=${dateVal}&start=${start}&end=${end}&espositore=${espositore}`);
     const data = await res.json();
     
@@ -120,7 +125,7 @@ document.getElementById("check").onclick = async () => {
 
     if (data.ok) {
       alert(`✅ Libero! Puoi procedere.`);
-      sendBtn.disabled = false; // Sblocca il tasto Prenota
+      sendBtn.disabled = false; // Sblocca il tasto finale
     } else {
       alert(`❌ Occupato da: ${data.with[0].name}`);
       sendBtn.disabled = true;
@@ -130,30 +135,10 @@ document.getElementById("check").onclick = async () => {
     alert("Errore di connessione al server."); 
   }
 };
-  
-  if (!dateVal || !start || !end) return alert("Inserisci i dati.");
 
-  const checkingOverlay = document.getElementById("checkingOverlay");
-  checkingOverlay.style.display = "flex";
-
-  try {
-    const res = await fetch(`${API}?action=check&date=${dateVal}&start=${start}&end=${end}&espositore=${espositore}`);
-    const data = await res.json();
-    checkingOverlay.style.display = "none";
-
-    if (data.ok) {
-      alert(`✅ Disponibile!`);
-      document.getElementById("send").disabled = false;
-    } else {
-      alert(`❌ Occupato da: ${data.with[0].name}`);
-      document.getElementById("send").disabled = true;
-    }
-  } catch (e) { 
-    checkingOverlay.style.display = "none";
-    alert("Errore server."); 
-  }
-};
-
+/**
+ * Prepara i dati della prenotazione e apre il modulo di conferma
+ */
 document.getElementById("send").onclick = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const payload = {
@@ -169,6 +154,7 @@ document.getElementById("send").onclick = () => {
 
   if (payload.name.length < 3) return alert("Inserisci il tuo nome.");
 
+  // Mostra riepilogo nel modal di conferma
   const dConf = payload.date.split("-").reverse().join("/");
   document.getElementById("confirmText").innerHTML = `
     <b>Espositore:</b> ${payload.espositore}<br>
@@ -179,32 +165,41 @@ document.getElementById("send").onclick = () => {
   window.currentBooking = payload;
 };
 
+/**
+ * Conferma definitiva: invia i dati al foglio Google tramite POST
+ */
 document.getElementById("confirmYes").onclick = async () => {
   document.getElementById("confirmModal").style.display = "none";
   document.getElementById("loadingOverlay").style.display = "flex";
   try {
     await fetch(API, { method: "POST", body: JSON.stringify(window.currentBooking) });
-    window.location.reload();
+    window.location.reload(); // Ricarica per aggiornare la lista
   } catch (e) { 
     alert("Errore invio."); 
     document.getElementById("loadingOverlay").style.display = "none";
   }
 };
 
+// Chiude il modal senza salvare
 document.getElementById("confirmNo").onclick = () => document.getElementById("confirmModal").style.display = "none";
 
+/**
+ * Inizializzazione dell'app al caricamento della pagina
+ */
 window.onload = () => {
-  // Imposta la data minima selezionabile (Oggi)
+  // Imposta la data minima sul calendario (Oggi)
   const oggi = new Date().toISOString().split("T")[0];
   const dateIn = document.getElementById("date");
   if(dateIn) { 
     dateIn.value = oggi; 
-    dateIn.setAttribute("min", oggi); // Impedisce di selezionare date passate dal calendario
+    dateIn.setAttribute("min", oggi); 
   }
 
+  // Gestione menu laterale delle postazioni
   document.getElementById("openPostazioni").onclick = () => document.getElementById("postazioniMenu").classList.add("show");
   document.getElementById("closePostazioni").onclick = () => document.getElementById("postazioniMenu").classList.remove("show");
 
+  // Genera dinamicamente la lista delle postazioni nel menu
   const listContainer = document.getElementById("postazioniList");
   if(listContainer) {
     listContainer.innerHTML = POSTAZIONI.map(p => `
@@ -215,5 +210,6 @@ window.onload = () => {
     `).join("");
   }
 
+  // Carica i dati esistenti
   caricaRiepilogo();
 };
