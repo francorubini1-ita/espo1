@@ -1,5 +1,5 @@
 /* ============================================================
-   VARIABILI E COLORI VIVACI
+    VARIABILI E COLORI VIVACI
    ============================================================ */
 :root {
   --primary: #007aff;
@@ -12,8 +12,8 @@
   --radius: 16px;
   
   /* Colori Vivaci Badge */
-  --espositore-a: #0047FF; /* Blu elettrico intenso */
-  --espositore-b: #FF9500; /* Arancione fluo Apple */
+  --espositore-a: #0047FF; 
+  --espositore-b: #FF9500; 
 }
 
 @media (prefers-color-scheme: dark) {
@@ -46,7 +46,7 @@ body {
 }
 
 /* ============================================================
-   SCHEDE E INPUT (Font Ingranditi)
+    SCHEDE E INPUT
    ============================================================ */
 .card {
   background: var(--card-bg);
@@ -78,7 +78,7 @@ label[for="start"]::before, label[for="end"]::before {
 .time-col { flex: 1; }
 
 /* ============================================================
-   BOTTONI
+    BOTTONI
    ============================================================ */
 button {
   width: 100%;
@@ -101,75 +101,63 @@ button {
 }
 
 /* ============================================================
-   BADGE ESPOSITORI (Sistemazione sovrapposizioni)
+    BADGE ESPOSITORI - VERSIONE ANTI-CAOS (Corretta)
    ============================================================ */
-
-/* 1. La card si adatta al contenuto ed evita altezze fisse */
-.booking-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--card-bg); /* Usa le tue variabili */
-    padding: 15px;
-    margin: 10px 15px; /* Aggiunge spazio laterale come le altre card */
-    border-radius: var(--radius);
-    border: 1px solid var(--ios-border);
-    height: auto; 
-    position: relative;
-    overflow: hidden;
-}
-
-/* 2. Il testo a sinistra si prende tutto lo spazio necessario */
-.booking-card > div:first-child {
-    flex: 1;
-    min-width: 0;
-    line-height: 1.4;
-}
-
-/* 3. Il badge si piazza a destra, fisso e senza uscire dai bordi */
-.badge {
-    position: relative; /* Rimuove absolute! */
-    display: flex; /* Centra testo e lettera perfettamente */
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 65px;
-    min-width: 65px;
-    height: 55px; /* Altezza definita per sembrare un'icona */
-    border-radius: 12px;
-    color: white;
-    font-size: 14px;
-    font-weight: 700;
-    margin-left: 15px; /* Distanza dal testo a sinistra */
-    flex-shrink: 0; /* Impedisce che il badge si schiacci se il testo è lungo */
-}
-
-/* Lettera grande dentro il badge */
-.badge span {
-    display: block;
-    font-size: 24px;
-    line-height: 1.1;
-    margin-top: 2px;
-}
-
-/* Colori specifici (mantenendo le tue ombre e colori) */
-.badge-a { background-color: var(--espositore-a); box-shadow: 0 4px 10px rgba(0,71,255,0.3); }
-.badge-b { background-color: var(--espositore-b); box-shadow: 0 4px 10px rgba(255,149,0,0.3); }
-
-/* 4. Intestazioni delle date pulite e separate */
 .date-group-header {
-    background: var(--primary);
-    color: white;
-    padding: 10px 15px;
-    border-radius: var(--radius);
-    margin: 25px 15px 10px 15px;
-    font-size: 20px;
-    font-weight: 800;
-    text-align: center;
+  margin: 30px 15px 10px;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--primary);
+  text-transform: uppercase;
 }
+
+.booking-card {
+  background: var(--card-bg);
+  padding: 15px;
+  margin: 0 15px 15px;
+  border-radius: 14px;
+  border: 1px solid var(--ios-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden; /* Sicurezza extra */
+}
+
+.booking-card > div:first-child {
+  flex: 1;
+  min-width: 0; /* Permette al testo di non spingere fuori il badge */
+}
+
+.badge {
+  flex-shrink: 0; /* Impedisce al badge di deformarsi */
+  width: 65px;    /* Larghezza fissa anti-caos */
+  max-width: 65px;
+  height: 55px;   /* Altezza fissa anti-caos */
+  overflow: hidden; /* Taglia i testi lunghi (come la data ISO) */
+  font-size: 12px; 
+  padding: 5px;
+  border-radius: 10px;
+  font-weight: 900;
+  color: white; 
+  text-align: center;
+  line-height: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.badge span {
+  display: block; 
+  font-size: 24px; 
+  margin-top: 2px;
+}
+
+.badge-a { background-color: var(--espositore-a); box-shadow: 0 2px 8px rgba(0,71,255,0.4); }
+.badge-b { background-color: var(--espositore-b); box-shadow: 0 2px 8px rgba(255,149,0,0.4); }
 
 /* ============================================================
-   OVERLAY SEMITRASPARENTI (Effetto Blur Glassmorphism)
+    OVERLAY E MENU
    ============================================================ */
 .glass-overlay {
   position: fixed; 
@@ -198,7 +186,7 @@ button {
   font-size: 22px;
   overflow-y: auto; 
   box-sizing: border-box;
-  padding-bottom: 80px;
+  padding-bottom: 80px; 
 }
 #postazioniMenu.show { right: 0; }
 
@@ -217,7 +205,7 @@ button {
 #confirmBox h3 { font-size: 28px; margin-top: 0; }
 
 /* ============================================================
-   ANIMAZIONI E FEEDBACK
+    ANIMAZIONI
    ============================================================ */
 .spinner { 
   border: 4px solid rgba(0,0,0,0.1); 
@@ -233,7 +221,5 @@ button {
 
 .label-error { color: var(--error) !important; animation: shake 0.4s; }
 @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
-
-
 
 
