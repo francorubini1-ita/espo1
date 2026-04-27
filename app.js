@@ -71,9 +71,16 @@ window.caricaRiepilogo = caricaRiepilogo;
 document.getElementById("check").onclick = async () => {
   const espositore = document.getElementById("espositore").value;
   const dateVal = document.getElementById("date").value;
+  const oggi = new Date().toISOString().split("T")[0];
   const start = document.getElementById("start").value;
   const end = document.getElementById("end").value;
 
+  // Controllo di sicurezza: se la data scelta è minore di oggi
+  if (dateVal < oggi) {
+    alert("❌ Non puoi prenotare una data passata!");
+    return;
+  }
+  
   if (!dateVal || !start || !end) return alert("Inserisci i dati.");
 
   const checkingOverlay = document.getElementById("checkingOverlay");
