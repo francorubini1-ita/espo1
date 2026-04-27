@@ -137,31 +137,46 @@ document.getElementById("check").onclick = async () => {
 };
 
 /**
- * Prepara i dati della prenotazione e apre il modulo di conferma
+ * FUNZIONE: Gestione del click sul tasto "Prenota"
+ * Scopo: Raccogliere i dati, validarli e mostrare il popup di conferma finale.
  */
 document.getElementById("send").onclick = () => {
+  // 1. Recupera l'ID utente dall'URL (passato da Telegram)
   const urlParams = new URLSearchParams(window.location.search);
+  
+  // 2. Crea l'oggetto "payload" con tutti i dati inseriti dall'utente nel modulo
   const payload = {
-    action: "submit",
-    telegramId: urlParams.get('user'),
-    espositore: document.getElementById("espositore").value,
-    date: document.getElementById("date").value,
-    start: document.getElementById("start").value,
-    end: document.getElementById("end").value,
-    name: document.getElementById("name").value.trim(),
-    postazione: document.getElementById("postazione").value
+    action: "submit", // Indica allo script di Google che vogliamo inserire una nuova riga
+    telegramId: urlParams.get('user'), // Prende il parametro 'user' dall'URL
+    espositore: document.getElementById("espositore").value, // Valore A o B
+    date: document.getElementById("date").value, // Data selezionata (YYYY-MM-DD)
+    start: document.getElementById("start").value, // Orario inizio
+    end: document.getElementById("end").value, // Orario fine
+    name: document.getElementById("name").value.trim(), // Nome (rimuove spazi inutili ai lati)
+    postazione: document.getElementById("postazione").value // Numero della postazione
   };
 
-  if (payload.name.length < 3) return alert("Inserisci il tuo nome.");
+  // 3. Validazione Nome: Se il nome è più corto di 3 lettere, blocca tutto e avvisa l'utente
+  if (payload.name.length < 3) return alert("Inserisci il tuo nome completo.");
 
-  // Mostra riepilogo nel modal di conferma
+  // 4. Formattazione Data: Trasforma la data da "2026-04-27" a "27/04/2026" per renderla leggibile
   const dConf = payload.date.split("-").reverse().join("/");
+
+  // 5. Costruzione del Riepilogo Visivo: Inserisce i dati nel testo della finestra di conferma (modal)
+  // Qui aggiungiamo Nome e Numero Postazione come richiesto
   document.getElementById("confirmText").innerHTML = `
+    <b>Nome:</b> ${payload.name}<br>
+    <b>Postazione:</b> ${payload.postazione}<br>
     <b>Espositore:</b> ${payload.espositore}<br>
     <b>Data:</b> ${dConf}<br>
     <b>Orario:</b> ${payload.start} - ${payload.end}
   `;
+
+  // 6. Mostra il popup (modal) impostando lo stile display su "flex"
   document.getElementById("confirmModal").style.display = "flex";
+  
+  // 7. Salvataggio Temporaneo: Salva i dati in una variabile globale
+  // Questa verrà usata dalla funzione "confirmYes" se l'utente preme "Sì, conferma"
   window.currentBooking = payload;
 };
 
