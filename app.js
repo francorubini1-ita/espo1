@@ -71,8 +71,7 @@ window.caricaRiepilogo = caricaRiepilogo;
 document.getElementById("check").onclick = async () => {
   const espositore = document.getElementById("espositore").value;
   const oggi = new Date().toISOString().split("T")[0];
- document.getElementById("check").onclick = async () => {
-  const dateVal = document.getElementById("date").value;
+   const dateVal = document.getElementById("date").value;
   const start = document.getElementById("start").value;
   const end = document.getElementById("end").value;
   const sendBtn = document.getElementById("send"); // Il tasto Prenota
