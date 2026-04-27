@@ -137,8 +137,13 @@ document.getElementById("confirmYes").onclick = async () => {
 document.getElementById("confirmNo").onclick = () => document.getElementById("confirmModal").style.display = "none";
 
 window.onload = () => {
+  // Imposta la data minima selezionabile (Oggi)
   const oggi = new Date().toISOString().split("T")[0];
-  if(document.getElementById("date")) document.getElementById("date").value = oggi;
+  const dateIn = document.getElementById("date");
+  if(dateIn) { 
+    dateIn.value = oggi; 
+    dateIn.setAttribute("min", oggi); // Impedisce di selezionare date passate dal calendario
+  }
 
   document.getElementById("openPostazioni").onclick = () => document.getElementById("postazioniMenu").classList.add("show");
   document.getElementById("closePostazioni").onclick = () => document.getElementById("postazioniMenu").classList.remove("show");
