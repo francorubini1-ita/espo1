@@ -27,11 +27,20 @@ async function caricaRiepilogo() {
     const gruppi = {};
     
     bookings.forEach(b => {
-      // Usiamo la data pulita dallo script
-      let dKey = b.data || "Senza Data";
-      if (!gruppi[dKey]) gruppi[dKey] = [];
-      gruppi[dKey].push(b);
-    });
+  // Prendiamo la stringa così come arriva dallo script
+  let dKey = b.data; 
+
+  // Se per caso arriva un formato lungo (ISO), tagliamo ai primi 10 caratteri
+  if (dKey && dKey.includes("T")) {
+    dKey = dKey.split("T")[0];
+  }
+  
+  // Se ancora non è nel formato corretto, non caricarla o usa un fallback
+  if (!dKey) dKey = "Senza Data";
+
+  if (!gruppi[dKey]) gruppi[dKey] = [];
+  gruppi[dKey].push(b);
+});
 
     let html = "";
     Object.keys(gruppi).sort().forEach(dateKey => {
