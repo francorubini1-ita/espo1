@@ -1,7 +1,7 @@
-// URL dell'API di Google Apps Script (il "ponte" verso il foglio Google)
+// URL dell'API di Google Apps Script
 const API = "https://script.google.com/macros/s/AKfycbzHmkvVWE12RA3MFycv4Cak9SghvkGYJzImfICdG4nLSKby47SIwnZgzXpR3cnRZrTh/exec";
 
-// Database locale delle postazioni con coordinate GPS
+// Database locale delle postazioni
 const POSTAZIONI = [
   { id: 1, nome: "Postazione 1", lat: 44.877242, lon: 11.858320 },  
   { id: 2, nome: "Postazione 2", lat: 44.577242, lon: 11.358320 },  
@@ -13,46 +13,38 @@ const POSTAZIONI = [
   { id: 8, nome: "Postazione 8", lat: 44.556829, lon: 11.319514 }
 ];
 
-/**
- * Genera il link per aprire Google Maps alle coordinate indicate
- */
 function mapLink(lat, lon) {
   return `https://www.google.com/maps?q=${lat},${lon}`;
 }
 
 /**
- * Funzione per scaricare e visualizzare tutte le prenotazioni esistenti.
- * Organizza i dati per data e ordina gli orari cronologicamente.
+ * Carica le prenotazioni e mantiene lo stile scuro
  */
 async function caricaRiepilogo() {
   const container = document.getElementById("riepilogo");
   if (!container) return;
-  container.innerHTML = "<p style='text-align:center; padding:30px;'>🔄 Caricamento...</p>";
+  
+  // Forza lo sfondo scuro anche durante il caricamento per evitare il flash bianco
+  container.innerHTML = "<p style='text-align:center; padding:30px; color:white;'>🔄 Caricamento...</p>";
 
   try {
     const res = await fetch(API + "?action=list");
     const bookings = await res.json();
     const gruppi = {};
     
-    // Raggruppa le prenotazioni per data
     bookings.forEach(b => {
       let dKey = b.data; 
-      if (dKey && dKey.includes("T")) {
-        dKey = dKey.split("T")[0]; // Pulisce formato data ISO se presente
-      }
+      if (dKey && dKey.includes("T")) dKey = dKey.split("T")[0];
       if (!dKey) dKey = "Senza Data";
-
       if (!gruppi[dKey]) gruppi[dKey] = [];
       gruppi[dKey].push(b);
     });
 
     let html = "";
-    // Ordina le date e genera l'HTML per ogni gruppo
     Object.keys(gruppi).sort().forEach(dateKey => {
-      const dF = dateKey.split("-").reverse().join("/"); // Formatta in DD/MM/YYYY
+      const dF = dateKey.split("-").reverse().join("/");
       html += `<div class="date-group-header">${dF}</div>`;
       
-      // Ordina per orario di inizio e crea le card
       gruppi[dateKey].sort((a,b) => a.inizio.toString().localeCompare(b.inizio.toString())).forEach(b => {
         const badgeClass = b.espositore === 'B' ? 'badge-b' : 'badge-a';
         html += `
@@ -65,18 +57,16 @@ async function caricaRiepilogo() {
           </div>`;
       });
     });
-    container.innerHTML = html || "<p style='text-align:center;'>Nessuna prenotazione.</p>";
+    container.innerHTML = html || "<p style='text-align:center; color:white;'>Nessuna prenotazione.</p>";
   } catch (e) { 
-    container.innerHTML = "<p style='text-align:center;'>Errore di sincronizzazione.</p>"; 
+    container.innerHTML = "<p style='text-align:center; color:white;'>Errore di sincronizzazione.</p>"; 
   }
 }
 
-// Rende la funzione accessibile globalmente
 window.caricaRiepilogo = caricaRiepilogo;
 
 /**
- * Gestisce il controllo di disponibilità prima della prenotazione.
- * Include validazioni su date passate, orari invertiti e sovrapposizioni.
+ * Controllo disponibilità
  */
 document.getElementById("check").onclick = async () => {
   const espositore = document.getElementById("espositore").value;
@@ -85,17 +75,14 @@ document.getElementById("check").onclick = async () => {
   const end = document.getElementById("end").value;
   const sendBtn = document.getElementById("send");
 
-  // Disabilita il tasto invio finché non viene superato il controllo
   sendBtn.disabled = true;
 
-  // Calcolo riferimenti temporali attuali per validazione
   const oraAttuale = new Date();
   const z = oraAttuale.getTimezoneOffset() * 60 * 1000;
   const oggiLocale = new Date(oraAttuale - z).toISOString().split('T')[0];
   const orarioAdesso = oraAttuale.getHours().toString().padStart(2, '0') + ":" + 
                        oraAttuale.getMinutes().toString().padStart(2, '0');
 
-  // Blocchi logici preventivi
   if (!dateVal || !start || !end) {
     alert("⚠️ Inserisci data, ora inizio e ora fine.");
     return;
@@ -117,15 +104,13 @@ document.getElementById("check").onclick = async () => {
   checkingOverlay.style.display = "flex";
 
   try {
-    // Interroga il server Google per verificare sovrapposizioni nel database
     const res = await fetch(`${API}?action=check&date=${dateVal}&start=${start}&end=${end}&espositore=${espositore}`);
     const data = await res.json();
-    
     checkingOverlay.style.display = "none";
 
     if (data.ok) {
       alert(`✅ Libero! Puoi procedere.`);
-      sendBtn.disabled = false; // Sblocca il tasto finale
+      sendBtn.disabled = false;
     } else {
       alert(`❌ Occupato da: ${data.with[0].name}`);
       sendBtn.disabled = true;
@@ -137,34 +122,30 @@ document.getElementById("check").onclick = async () => {
 };
 
 /**
- * FUNZIONE: Gestione del click sul tasto "Prenota"
- * Scopo: Raccogliere i dati, validarli e mostrare il popup di conferma finale.
+ * Gestione click "Prenota" - AGGIORNATA CON TELEFONO
  */
 document.getElementById("send").onclick = () => {
-  // 1. Recupera l'ID utente dall'URL (passato da Telegram)
   const urlParams = new URLSearchParams(window.location.search);
   
-  // 2. Crea l'oggetto "payload" con tutti i dati inseriti dall'utente nel modulo
+  // Recupero dati dai campi
   const payload = {
-    action: "submit", // Indica allo script di Google che vogliamo inserire una nuova riga
-    telegramId: urlParams.get('user') || "Utente Web", // Prende il parametro 'user' dall'URL o fallback
-    espositore: document.getElementById("espositore").value, // Valore A o B
-    date: document.getElementById("date").value, // Data selezionata (YYYY-MM-DD)
-    start: document.getElementById("start").value, // Orario inizio
-    end: document.getElementById("end").value, // Orario fine
-    name: document.getElementById("name").value.trim(), // Nome (rimuove spazi inutili ai lati)
-    postazione: document.getElementById("postazione").value, // Numero della postazione
-    phone: document.getElementById("phone") ? document.getElementById("phone").value.trim() : "" // Recupera il telefono
+    action: "submit",
+    telegramId: urlParams.get('user') || "Utente Web",
+    espositore: document.getElementById("espositore").value,
+    date: document.getElementById("date").value,
+    start: document.getElementById("start").value,
+    end: document.getElementById("end").value,
+    name: document.getElementById("name").value.trim(),
+    postazione: document.getElementById("postazione").value,
+    phone: document.getElementById("phone").value.trim() // Cattura "Il tuo numero di telefono"
   };
 
-  // 3. Validazioni Nome e Telefono
   if (payload.name.length < 3) return alert("Inserisci il tuo nome completo.");
-  if (payload.phone && payload.phone.length < 6) return alert("Inserisci un numero di telefono valido.");
+  if (payload.phone.length < 6) return alert("Inserisci il tuo numero di telefono.");
 
-  // 4. Formattazione Data: Trasforma la data da "2026-04-27" a "27/04/2026" per renderla leggibile
   const dConf = payload.date.split("-").reverse().join("/");
 
-  // 5. Costruzione del Riepilogo Visivo nel popup di conferma (modal)
+  // Mostra riepilogo nel modal
   document.getElementById("confirmText").innerHTML = `
     <b>Nome:</b> ${payload.name}<br>
     <b>Telefono:</b> ${payload.phone}<br>
@@ -174,36 +155,34 @@ document.getElementById("send").onclick = () => {
     <b>Orario:</b> ${payload.start} - ${payload.end}
   `;
 
-  // 6. Mostra il popup (modal) impostando lo stile display su "flex"
   document.getElementById("confirmModal").style.display = "flex";
-  
-  // 7. Salvataggio Temporaneo per la funzione "confirmYes"
   window.currentBooking = payload;
 };
 
 /**
- * Conferma definitiva: invia i dati al foglio Google tramite POST
+ * Conferma definitiva
  */
 document.getElementById("confirmYes").onclick = async () => {
   document.getElementById("confirmModal").style.display = "none";
   document.getElementById("loadingOverlay").style.display = "flex";
   try {
     await fetch(API, { method: "POST", body: JSON.stringify(window.currentBooking) });
-    window.location.reload(); // Ricarica per aggiornare la lista
+    window.location.reload(); 
   } catch (e) { 
     alert("Errore invio."); 
     document.getElementById("loadingOverlay").style.display = "none";
   }
 };
 
-// Chiude il modal senza salvare
 document.getElementById("confirmNo").onclick = () => document.getElementById("confirmModal").style.display = "none";
 
 /**
- * Inizializzazione dell'app al caricamento della pagina
+ * Inizializzazione
  */
 window.onload = () => {
-  // Imposta la data minima sul calendario (Oggi)
+  // Impedisce lo sfondo bianco forzando il colore body se necessario
+  document.body.style.backgroundColor = "#121212"; 
+
   const oggi = new Date().toISOString().split("T")[0];
   const dateIn = document.getElementById("date");
   if(dateIn) { 
@@ -211,23 +190,19 @@ window.onload = () => {
     dateIn.setAttribute("min", oggi); 
   }
 
-  // Gestione menu laterale delle postazioni
   document.getElementById("openPostazioni").onclick = () => document.getElementById("postazioniMenu").classList.add("show");
   document.getElementById("closePostazioni").onclick = () => document.getElementById("postazioniMenu").classList.remove("show");
 
-  // Genera dinamicamente la lista delle postazioni nel menu
   const listContainer = document.getElementById("postazioniList");
   if(listContainer) {
     listContainer.innerHTML = POSTAZIONI.map(p => `
-      <div style="padding:18px 0; border-bottom:1px solid var(--ios-border);">
-        <strong style="font-size:22px;">${p.nome}</strong><br>
-        <a href="${mapLink(p.lat, p.lon)}" target="_blank" style="color:var(--primary); font-size:20px; text-decoration:none;">📍 Apri Mappa GPS</a>
+      <div style="padding:18px 0; border-bottom:1px solid #333;">
+        <strong style="font-size:22px; color:white;">${p.nome}</strong><br>
+        <a href="${mapLink(p.lat, p.lon)}" target="_blank" style="color:#0A84FF; font-size:20px; text-decoration:none;">📍 Apri Mappa GPS</a>
       </div>
     `).join("");
   }
 
-  // Carica i dati esistenti
   caricaRiepilogo();
 };
-
 
