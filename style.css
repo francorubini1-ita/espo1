@@ -101,46 +101,72 @@ button {
 }
 
 /* ============================================================
-   BADGE ESPOSITORI (Ridotti con Lettera Sotto)
+   BADGE ESPOSITORI (Sistemazione sovrapposizioni)
    ============================================================ */
-/* Assicurati che la card non abbia un'altezza fissa */
+
+/* 1. La card si adatta al contenuto ed evita altezze fisse */
 .booking-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background: var(--card-bg); /* Usa le tue variabili */
     padding: 15px;
-    margin-bottom: 10px;
-    height: auto; /* Fondamentale: deve adattarsi al contenuto */
+    margin: 10px 15px; /* Aggiunge spazio laterale come le altre card */
+    border-radius: var(--radius);
+    border: 1px solid var(--ios-border);
+    height: auto; 
     position: relative;
     overflow: hidden;
 }
 
-/* Sistema il badge per non farlo sovrapporre al testo */
+/* 2. Il testo a sinistra si prende tutto lo spazio necessario */
+.booking-card > div:first-child {
+    flex: 1;
+    min-width: 0;
+    line-height: 1.4;
+}
+
+/* 3. Il badge si piazza a destra, fisso e senza uscire dai bordi */
 .badge {
-    position: static; /* Cambia da absolute a static */
-    margin-left: 10px;
-    min-width: 60px;
+    position: relative; /* Rimuove absolute! */
+    display: flex; /* Centra testo e lettera perfettamente */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 65px;
+    min-width: 65px;
+    height: 55px; /* Altezza definita per sembrare un'icona */
+    border-radius: 12px;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    margin-left: 15px; /* Distanza dal testo a sinistra */
+    flex-shrink: 0; /* Impedisce che il badge si schiacci se il testo è lungo */
+}
+
+/* Lettera grande dentro il badge */
+.badge span {
+    display: block;
+    font-size: 24px;
+    line-height: 1.1;
+    margin-top: 2px;
+}
+
+/* Colori specifici (mantenendo le tue ombre e colori) */
+.badge-a { background-color: var(--espositore-a); box-shadow: 0 4px 10px rgba(0,71,255,0.3); }
+.badge-b { background-color: var(--espositore-b); box-shadow: 0 4px 10px rgba(255,149,0,0.3); }
+
+/* 4. Intestazioni delle date pulite e separate */
+.date-group-header {
+    background: var(--primary);
+    color: white;
+    padding: 10px 15px;
+    border-radius: var(--radius);
+    margin: 25px 15px 10px 15px;
+    font-size: 20px;
+    font-weight: 800;
     text-align: center;
 }
-
-/* Rendi il testo della data pulito */
-.date-group-header {
-    background: #007aff;
-    color: white;
-    padding: 8px;
-    border-radius: 8px;
-    margin: 20px 0 10px 0;
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.badge span {
-  display: block; 
-  font-size: 20px; 
-}
-
-.badge-a { background-color: var(--espositore-a); box-shadow: 0 2px 8px rgba(0,71,255,0.4); }
-.badge-b { background-color: var(--espositore-b); box-shadow: 0 2px 8px rgba(255,149,0,0.4); }
 
 /* ============================================================
    OVERLAY SEMITRASPARENTI (Effetto Blur Glassmorphism)
