@@ -70,16 +70,40 @@ window.caricaRiepilogo = caricaRiepilogo;
 
 document.getElementById("check").onclick = async () => {
   const espositore = document.getElementById("espositore").value;
-  const dateVal = document.getElementById("date").value;
   const oggi = new Date().toISOString().split("T")[0];
+  const dateVal = document.getElementById("date").value;
   const start = document.getElementById("start").value;
   const end = document.getElementById("end").value;
+  
+  // 1. Calcolo "Adesso" e "Oggi" locale
+  const oraAttuale = new Date();
+  const z = oraAttuale.getTimezoneOffset() * 60 * 1000;
+  const oggiLocale = new Date(oraAttuale - z).toISOString().split('T')[0];
+  const orarioAdesso = oraAttuale.getHours().toString().padStart(2, '0') + ":" + 
+                       oraAttuale.getMinutes().toString().padStart(2, '0');
 
-  // Controllo di sicurezza: se la data scelta è minore di oggi
-  if (dateVal < oggi) {
+  // 2. Controllo: Data passata
+  if (dateVal < oggiLocale) {
     alert("❌ Non puoi prenotare una data passata!");
     return;
   }
+
+  // 3. Controllo: Orario di inizio già passato (solo se la data è oggi)
+  if (dateVal === oggiLocale && start < orarioAdesso) {
+    alert("❌ L'orario di inizio è già passato!");
+    return;
+  }
+
+  // 4. Controllo: Orario a ritroso (es. inizio 10:00, fine 09:00)
+  if (start >= end) {
+    alert("❌ L'orario di fine deve essere successivo a quello di inizio!");
+    return;
+  }
+
+  // Se passa tutti i controlli, procedi con la chiamata al server...
+  const espositore = document.getElementById("espositore").value;
+  const checkingOverlay = document.getElementById("checkingOverlay");
+ 
   
   if (!dateVal || !start || !end) return alert("Inserisci i dati.");
 
