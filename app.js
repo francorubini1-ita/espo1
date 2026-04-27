@@ -27,18 +27,26 @@ async function caricaRiepilogo() {
     const gruppi = {};
     
     bookings.forEach(b => {
-      const dataPulita = b.date.substring(0, 10);
-      if (!gruppi[dataPulita]) gruppi[dataPulita] = [];
-      gruppi[dataPulita].push(b);
+      // FIX DATA: Prendiamo solo i primi 10 caratteri (YYYY-MM-DD) 
+      // Ignoriamo orari e fusi orari che causano il bug del giorno precedente
+      let dataStringa = b.date.toString().substring(0, 10);
+      
+      if (!gruppi[dataStringa]) gruppi[dataStringa] = [];
+      gruppi[dataStringa].push(b);
     });
 
     let html = "";
-    Object.keys(gruppi).sort().forEach(dataKey => {
-      const dFormattata = dataKey.split("-").reverse().join("/");
+    // Ordiniamo le date in modo cronologico
+    const dateOrdinate = Object.keys(gruppi).sort();
+
+    dateOrdinate.forEach(dataKey => {
+      // Formattiamo da YYYY-MM-DD a DD/MM/YYYY per il titolo
+      const parti = dataKey.split("-");
+      const dFormattata = parti.length === 3 ? `${parti[2]}/${parti[1]}/${parti[0]}` : dataKey;
+      
       html += `<div class="date-group-header">${dFormattata}</div>`;
       
       gruppi[dataKey].sort((a,b) => a.start.localeCompare(b.start)).forEach(b => {
-        // Pulizia Badge: Prende solo 'A' o 'B'
         let esp = "A";
         if (b.espositore) {
             let s = b.espositore.toString();
@@ -62,17 +70,15 @@ async function caricaRiepilogo() {
   }
 }
 
-// Rendo la funzione disponibile globalmente per il pulsante Aggiorna dell'HTML
 window.caricaRiepilogo = caricaRiepilogo;
 
-// Controllo disponibilità
 document.getElementById("check").onclick = async () => {
   const espositore = document.getElementById("espositore").value;
   const dateVal = document.getElementById("date").value;
   const start = document.getElementById("start").value;
   const end = document.getElementById("end").value;
 
-  if (!dateVal || !start || !end) return alert("Inserisci tutti i dati temporali.");
+  if (!dateVal || !start || !end) return alert("Inserisci i dati.");
 
   const checkingOverlay = document.getElementById("checkingOverlay");
   checkingOverlay.style.display = "flex";
@@ -83,7 +89,7 @@ document.getElementById("check").onclick = async () => {
     checkingOverlay.style.display = "none";
 
     if (data.ok) {
-      alert(`✅ Espositore ${espositore} LIBERO!`);
+      alert(`✅ Disponibile!`);
       document.getElementById("send").disabled = false;
     } else {
       alert(`❌ Occupato da: ${data.with[0].name}`);
@@ -95,7 +101,6 @@ document.getElementById("check").onclick = async () => {
   }
 };
 
-// Invio prenotazione
 document.getElementById("send").onclick = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const payload = {
@@ -111,9 +116,10 @@ document.getElementById("send").onclick = () => {
 
   if (payload.name.length < 3) return alert("Inserisci il tuo nome.");
 
+  const dConf = payload.date.split("-").reverse().join("/");
   document.getElementById("confirmText").innerHTML = `
     <b>Espositore:</b> ${payload.espositore}<br>
-    <b>Data:</b> ${payload.date.split("-").reverse().join("/")}<br>
+    <b>Data:</b> ${dConf}<br>
     <b>Orario:</b> ${payload.start} - ${payload.end}
   `;
   document.getElementById("confirmModal").style.display = "flex";
@@ -134,25 +140,13 @@ document.getElementById("confirmYes").onclick = async () => {
 
 document.getElementById("confirmNo").onclick = () => document.getElementById("confirmModal").style.display = "none";
 
-// Inizializzazione al caricamento
 window.onload = () => {
   const oggi = new Date().toISOString().split("T")[0];
-  const dateIn = document.getElementById("date");
-  if(dateIn) { dateIn.value = oggi; dateIn.setAttribute("min", oggi); }
+  if(document.getElementById("date")) document.getElementById("date").value = oggi;
 
-  // Pulsante Mappa Postazioni
-  const btnOpen = document.getElementById("openPostazioni");
-  if(btnOpen) {
-    btnOpen.onclick = () => document.getElementById("postazioniMenu").classList.add("show");
-  }
+  document.getElementById("openPostazioni").onclick = () => document.getElementById("postazioniMenu").classList.add("show");
+  document.getElementById("closePostazioni").onclick = () => document.getElementById("postazioniMenu").classList.remove("show");
 
-  // Pulsante Chiudi Mappa
-  const btnClose = document.getElementById("closePostazioni");
-  if(btnClose) {
-    btnClose.onclick = () => document.getElementById("postazioniMenu").classList.remove("show");
-  }
-
-  // Generazione lista postazioni
   const listContainer = document.getElementById("postazioniList");
   if(listContainer) {
     listContainer.innerHTML = POSTAZIONI.map(p => `
