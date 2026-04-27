@@ -124,14 +124,13 @@ async function caricaRiepilogo() {
     const gruppi = {};
     
     bookings.forEach(b => {
-      // PULIZIA DATA: Prende solo YYYY-MM-DD se arriva come stringa ISO
-      const dataPulita = b.date.includes("T") ? b.date.split("T")[0] : b.date;
+      // PULIZIA DATA: Prende solo YYYY-MM-DD
+      const dataPulita = b.date.substring(0, 10);
       if (!gruppi[dataPulita]) gruppi[dataPulita] = [];
       gruppi[dataPulita].push(b);
     });
 
     let html = "";
-    // Ordina le date (dalla più recente)
     Object.keys(gruppi).sort().forEach(dataKey => {
       const dFormattata = dataKey.split("-").reverse().join("/");
       html += `<div class="date-group-header">${dFormattata}</div>`;
@@ -140,9 +139,9 @@ async function caricaRiepilogo() {
         const badgeClass = b.espositore === 'B' ? 'badge-b' : 'badge-a';
         html += `
           <div class="booking-card">
-            <div>
-              <strong style="font-size:24px; display:block; margin-bottom:4px;">${b.name}</strong>
-              <span style="font-size:19px; opacity:0.8;">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
+            <div class="booking-info">
+              <strong class="booking-name">${b.name}</strong>
+              <span class="booking-details">Post. ${b.postazione} | 🕒 ${b.start}-${b.end}</span>
             </div>
             <div class="badge ${badgeClass}">Esp.<span>${b.espositore || 'A'}</span></div>
           </div>`;
@@ -168,5 +167,7 @@ window.onload = () => {
     </div>
   `).join("");
 
+  caricaRiepilogo();
+};
   caricaRiepilogo();
 };
