@@ -28,7 +28,7 @@
 body {
   margin: 0;
   font-family: -apple-system, sans-serif;
-  background-color: var(--bg);
+  background-color: #121212 !important;
   color: var(--text);
   font-size: 20px; 
 }
