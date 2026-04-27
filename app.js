@@ -71,39 +71,66 @@ window.caricaRiepilogo = caricaRiepilogo;
 document.getElementById("check").onclick = async () => {
   const espositore = document.getElementById("espositore").value;
   const oggi = new Date().toISOString().split("T")[0];
+ document.getElementById("check").onclick = async () => {
   const dateVal = document.getElementById("date").value;
   const start = document.getElementById("start").value;
   const end = document.getElementById("end").value;
-  
-  // 1. Calcolo "Adesso" e "Oggi" locale
+  const sendBtn = document.getElementById("send"); // Il tasto Prenota
+
+  // Reset dello stato del tasto prenota ogni volta che fai un nuovo check
+  sendBtn.disabled = true;
+
+  // 1. Calcolo "Adesso" locale
   const oraAttuale = new Date();
   const z = oraAttuale.getTimezoneOffset() * 60 * 1000;
   const oggiLocale = new Date(oraAttuale - z).toISOString().split('T')[0];
   const orarioAdesso = oraAttuale.getHours().toString().padStart(2, '0') + ":" + 
                        oraAttuale.getMinutes().toString().padStart(2, '0');
 
-  // 2. Controllo: Data passata
+  // 2. VALIDAZIONI
+  if (!dateVal || !start || !end) {
+    alert("⚠️ Inserisci data, ora inizio e ora fine.");
+    return;
+  }
+
   if (dateVal < oggiLocale) {
     alert("❌ Non puoi prenotare una data passata!");
     return;
   }
 
-  // 3. Controllo: Orario di inizio già passato (solo se la data è oggi)
   if (dateVal === oggiLocale && start < orarioAdesso) {
     alert("❌ L'orario di inizio è già passato!");
     return;
   }
 
-  // 4. Controllo: Orario a ritroso (es. inizio 10:00, fine 09:00)
   if (start >= end) {
     alert("❌ L'orario di fine deve essere successivo a quello di inizio!");
     return;
   }
 
-  // Se passa tutti i controlli, procedi con la chiamata al server...
-  const espositore = document.getElementById("espositore").value;
+  // 3. SE I CONTROLLI PASSANO, AVVIA IL CONTROLLO SERVER
   const checkingOverlay = document.getElementById("checkingOverlay");
- 
+  checkingOverlay.style.display = "flex";
+
+  try {
+    const espositore = document.getElementById("espositore").value;
+    const res = await fetch(`${API}?action=check&date=${dateVal}&start=${start}&end=${end}&espositore=${espositore}`);
+    const data = await res.json();
+    
+    checkingOverlay.style.display = "none";
+
+    if (data.ok) {
+      alert(`✅ Libero! Puoi procedere.`);
+      sendBtn.disabled = false; // Sblocca il tasto Prenota
+    } else {
+      alert(`❌ Occupato da: ${data.with[0].name}`);
+      sendBtn.disabled = true;
+    }
+  } catch (e) { 
+    checkingOverlay.style.display = "none";
+    alert("Errore di connessione al server."); 
+  }
+};
   
   if (!dateVal || !start || !end) return alert("Inserisci i dati.");
 
